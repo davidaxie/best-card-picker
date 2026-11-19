@@ -15,6 +15,7 @@ Swift, so both always give the same answer. See `../PRD.md` and
 | `Shared/` | Code built into both the app and the widget: App Group names and the Control Center intent. |
 | `AppTests/`, `UITests/` | XCTest unit tests and UI tests for the app. |
 | `scripts/sync-shared-data.sh` | Copies `../data/{cards,merchants,categories,golden_tests}.json` into the package. It also runs as an Xcode build phase. It never edits `data/`. |
+| `scripts/build-brands.py` | Builds the bundled store list `CardPickerCore/Resources/brands.json` (about 3,900 US chains) from the name-suggestion-index. Rerun it to refresh the list; see the header of the script. |
 | `scripts/ts-parity.sh` | Runs the TypeScript engine on every golden case and writes `ts_parity.json`. The Swift tests then check the two engines agree word for word. |
 | `project.yml` | XcodeGen spec. The generated `BestCardPicker.xcodeproj` is committed. |
 
@@ -61,9 +62,15 @@ After the extension side changes `data/` or `src/engine`, run
 - **Category grid** (Pick tab): one tap, and the answer is computed on the spot.
   The engine takes microseconds; a test checks that all 12 tiles answer in
   under 200 ms.
+- **Store search** (Pick tab): type a store name ("Trader", "Circle K",
+  "Chipotle") and each match shows its best card, with no location needed. It
+  searches the hand-reviewed brands in `cards.json` and `merchants.json` first,
+  then about 3,900 US chains bundled in `brands.json`.
 - **Nearby**: an `MKLocalPointsOfInterestRequest` within 200 m lists the 5
   nearest places. Each place's category is resolved in this order: your saved
-  choice for that place, a brand in `merchants.json`, the MapKit category
+  choice for that place, a brand in `merchants.json`, a chain in the bundled
+  `brands.json` (whole name only, so "Kings BBQ" is not the Kings
+  supermarket), the MapKit category
   (PRD table), then general (the app asks once and remembers). The reason line
   says "Likely" because MapKit is guessing.
 - **Saved places** (max 20, iOS's limit): each place is a 100 m
@@ -98,3 +105,15 @@ After the extension side changes `data/` or `src/engine`, run
   containing anything like a card number (12 or more digits) are rejected.
 - The only network use is MapKit. There's no URLSession, iCloud, CloudKit,
   analytics or crash reporting. "Clear all data" in Settings wipes both files.
+
+## Store list source and license
+
+`brands.json` is generated from the
+[name-suggestion-index](https://github.com/osmlab/name-suggestion-index)
+8.0.20261101 (BSD-3-Clause, copyright the OpenStreetMap name-suggestion-index
+contributors; full text in `brands-LICENSE.md`). `scripts/build-brands.py` keeps
+US brands, maps each OpenStreetMap tag group to a card category, applies
+reviewed fixes (Walmart and Target are never grocery, convenience chains like
+Circle K count as gas, dollar stores are general), and drops single dictionary
+words such as "Express" unless reviewed. Brands that run several kinds of store
+are flagged `verify` and the app says so. The curated `data/` files always win.

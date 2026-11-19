@@ -23,6 +23,9 @@ let package = Package(
         .target(
             name: "CardPickerCore",
             dependencies: ["BestCardEngine"],
+            // brands.json: ~3,900 US chains from the name-suggestion-index
+            // (BSD-3-Clause, license copied alongside). ios/scripts/build-brands.py.
+            resources: [.copy("Resources/brands.json"), .copy("Resources/brands-LICENSE.md")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(

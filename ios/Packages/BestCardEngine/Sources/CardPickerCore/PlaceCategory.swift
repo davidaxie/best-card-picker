@@ -29,7 +29,7 @@ public enum PlaceCategoryMapper {
 
     public enum Source: String, Codable, Sendable {
         case remembered   // user picked it for this place before
-        case brand        // merchants.json brand match
+        case brand        // curated or bundled brand match
         case mapKit       // MapKit point-of-interest category
         case unknown      // fell back to general; ask once
     }
@@ -40,15 +40,21 @@ public enum PlaceCategoryMapper {
         public var merchant: Merchant?
     }
 
-    /// Order: the user's remembered choice for this place, then a brand match
-    /// from merchants.json, then the MapKit category, then general.
-    public static func resolve(name: String, poi: MKPointOfInterestCategory?, rememberedCategory: String?, engine: Engine) -> Resolution {
+    /// Order: the user's remembered choice for this place, then a curated
+    /// brand (cards.json / merchants.json, engine prefix rule), then a bundled
+    /// brand from brands.json (whole name only), then the MapKit category,
+    /// then general.
+    public static func resolve(name: String, poi: MKPointOfInterestCategory?, rememberedCategory: String?, engine: Engine,
+                               brands: BrandIndex = .shared) -> Resolution {
         let merchant = engine.merchant(for: name)
         if let rememberedCategory {
             return Resolution(category: rememberedCategory, source: .remembered, merchant: merchant)
         }
         if let merchant {
             return Resolution(category: merchant.category, source: .brand, merchant: merchant)
+        }
+        if let brand = brands.lookup(name) {
+            return Resolution(category: brand.category, source: .brand, merchant: brand)
         }
         if let mapped = engineCategory(for: poi) {
             return Resolution(category: mapped, source: .mapKit, merchant: nil)

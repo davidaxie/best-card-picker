@@ -119,4 +119,10 @@ public enum DefaultData {
         }
         return file.merchants
     }
+
+    /// Hand-reviewed store brands (not domains) from cards.json and
+    /// merchants.json, for store search.
+    public static func curatedBrands() -> [Merchant] {
+        ((cardsFile().merchants ?? []) + merchants()).filter { !$0.match.contains(".") }
+    }
 }
