@@ -66,7 +66,6 @@ const manifest = {
   minimum_chrome_version: '120',
   permissions: ['storage', 'activeTab'],
   optional_permissions: ['scripting'],
-  optional_host_permissions: ['<all_urls>'],
   background: { service_worker: 'service-worker.js', type: 'module' },
   action: {
     default_title: 'Best Card Picker',
@@ -80,13 +79,11 @@ const manifest = {
   },
 };
 if (e2e) {
-  // Test build only: grant what the Auto mode switch would request, since a headless test cannot
-  // click Chrome's permission prompt. Never use dist-e2e for real browsing.
+  // Test build only: a headless test cannot click the toolbar icon, so it never gets activeTab.
+  // Host access stands in for that one-tab grant. scripting stays optional, as in the real build,
+  // so the first "Point to my card" click still has to request it. Never use dist-e2e for browsing.
   manifest.name += ' (e2e test build)';
-  manifest.permissions.push('scripting');
   manifest.host_permissions = ['<all_urls>'];
-  delete manifest.optional_permissions;
-  delete manifest.optional_host_permissions;
 }
 writeFileSync(resolve(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 

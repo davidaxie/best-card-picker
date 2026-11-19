@@ -42,39 +42,16 @@ function categorySelect(value: Category, onChange: (c: Category) => void, testId
 // ---------- General ----------
 function renderGeneral(): void {
   const paused = $<HTMLInputElement>('paused');
-  const auto = $<HTMLInputElement>('autoMode');
   const cash = $<HTMLInputElement>('preferCash');
   paused.checked = state.settings.paused;
-  auto.checked = state.settings.autoMode;
   cash.checked = state.settings.preferCashOnTie;
   paused.onchange = async () => {
     await chrome.runtime.sendMessage({ type: 'setSettings', patch: { paused: paused.checked } });
-    status(paused.checked ? 'Paused on all sites.' : 'Resumed.');
+    status(paused.checked ? 'Paused: no badge and no outline.' : 'Resumed.');
   };
   cash.onchange = async () => {
     await chrome.runtime.sendMessage({ type: 'setSettings', patch: { preferCashOnTie: cash.checked } });
     status('Tie preference saved.');
-  };
-  auto.onchange = async () => {
-    const perms: chrome.permissions.Permissions = { permissions: ['scripting'], origins: ['<all_urls>'] };
-    if (auto.checked) {
-      let granted = false;
-      try {
-        granted = await chrome.permissions.request(perms);
-      } catch {
-        granted = false;
-      }
-      if (!granted) {
-        auto.checked = false;
-        return status('Auto mode needs access to all sites. Click-to-check still works without it.', true);
-      }
-      const r = (await chrome.runtime.sendMessage({ type: 'autoMode', enabled: true })) as { active: boolean };
-      status(r.active ? 'Auto mode on: the pill appears on checkout pages.' : 'Auto mode saved, but it is paused.');
-    } else {
-      await chrome.runtime.sendMessage({ type: 'autoMode', enabled: false });
-      await chrome.permissions.remove(perms).catch(() => false);
-      status('Auto mode off. Click the toolbar icon to check a site.');
-    }
   };
 }
 
@@ -298,7 +275,7 @@ function renderSites(): void {
   box.replaceChildren();
   const cats = Object.entries(state.siteCategories).sort(([a], [b]) => a.localeCompare(b));
   const foreign = Object.entries(state.siteForeign).sort(([a], [b]) => a.localeCompare(b));
-  if (!cats.length && !foreign.length && !state.neverSites.length) {
+  if (!cats.length && !foreign.length) {
     box.append(h('p', { class: 'muted' }, 'No per-site choices yet. Pick a category in the toolbar popup to add one.'));
     return;
   }
@@ -306,7 +283,7 @@ function renderSites(): void {
   const body = h('tbody');
   const remove = (fn: () => void) => h('button', { type: 'button', class: 'small', onclick: async () => {
     fn();
-    await saveState({ siteCategories: state.siteCategories, siteForeign: state.siteForeign, neverSites: state.neverSites });
+    await saveState({ siteCategories: state.siteCategories, siteForeign: state.siteForeign });
     renderSites();
     status('Removed.');
   } }, 'Remove');
@@ -320,9 +297,6 @@ function renderSites(): void {
   }
   for (const [domain, value] of foreign) {
     body.append(h('tr', {}, h('td', {}, domain), h('td', {}, value ? 'Always foreign' : 'Never foreign'), h('td', {}, remove(() => delete state.siteForeign[domain]))));
-  }
-  for (const domain of state.neverSites) {
-    body.append(h('tr', {}, h('td', {}, domain), h('td', {}, 'Pill never shown'), h('td', {}, remove(() => (state.neverSites = state.neverSites.filter((d) => d !== domain))))));
   }
   table.append(body);
   box.append(table);
@@ -372,8 +346,7 @@ function wireData(): void {
     status('Cards reset to defaults.');
   };
   $('clear').onclick = async () => {
-    if (!confirm('Clear per-site choices, cap toggles, never-show sites, settings and saved last four digits? Your card rules are kept.')) return;
-    await chrome.runtime.sendMessage({ type: 'autoMode', enabled: false });
+    if (!confirm('Clear per-site choices, cap toggles, settings and saved last digits? Your card rules are kept.')) return;
     await clearAllData(false);
     state = await loadState();
     resetDraft();

@@ -1,5 +1,6 @@
-// Service worker: runs the engine, caches one result per tab, sets the toolbar badge, answers the
-// popup and the content script. Makes no network requests.
+// Service worker: runs the engine, caches one result per tab, sets the toolbar badge and answers
+// the popup. Click-only: nothing runs on a page until the user clicks the toolbar icon. Makes no
+// network requests.
 import merchantsData from '../../data/merchants.json';
 import pslText from '../../data/public_suffix.dat?raw';
 import type { Card, Category, MerchantsFile } from '../engine';
@@ -7,13 +8,13 @@ import { decide, isCategory, type Decision, type PageInfo } from '../shared/deci
 import { parsePsl } from '../shared/psl';
 import { loadState, saveState, type Settings, type StoredState } from '../shared/state';
 import type { CheckoutScan } from '../content/detect';
-import type { PillData } from '../content/pill';
 import type { CardTarget, SavedStatus, SavedTargets } from '../content/saved-cards';
-import { capTogglesFor, rateText, type PopupData } from '../shared/view';
+import { capTogglesFor, type PopupData } from '../shared/view';
 
 const merchants = merchantsData as MerchantsFile;
 const psl = parsePsl(pslText);
-const SCRIPT_ID = 'bcp-detect';
+/** Id of the all-sites content script that older builds registered for Auto mode. */
+const OLD_AUTO_SCRIPT_ID = 'bcp-detect';
 
 export interface SavedReport {
   url: string;
@@ -26,7 +27,6 @@ interface TabEntry {
   page?: PageInfo;
   checkout?: CheckoutScan;
   decision?: Decision;
-  dismissedUrl?: string;
   saved?: SavedReport;
   savedWaiters?: ((r: SavedReport) => void)[];
 }
@@ -65,27 +65,6 @@ function decisionFor(state: StoredState, tabId: number, page: PageInfo): Decisio
   return e.decision;
 }
 
-function pillData(state: StoredState, d: Decision): PillData | null {
-  const r = d.recommendation;
-  const card = cardById(state, r.cardId);
-  if (!card || r.rate === null) return null;
-  const runner = cardById(state, r.runnerUp?.cardId ?? null);
-  const warnings = r.warnings
-    .filter((w) => ['foreign_fees', 'may_not_take_amex', 'cap_near_limit', 'no_accepted_card'].includes(w.code))
-    .map((w) => w.message);
-  const ask = d.needsAsk ? ' Unknown store: pick a category from the toolbar icon.' : '';
-  return {
-    cardName: card.name,
-    color: card.color ?? '#444444',
-    rateText: rateText(card, r.rate),
-    runnerUpName: runner?.name ?? null,
-    last4: state.last4[card.id] ?? null,
-    detail: `${r.reason}.${ask}`,
-    warnings,
-    domain: d.domain,
-  };
-}
-
 function target(state: StoredState, id: string | null | undefined): CardTarget | null {
   const card = cardById(state, id ?? null);
   const last4 = card ? state.last4[card.id] : undefined;
@@ -93,22 +72,11 @@ function target(state: StoredState, id: string | null | undefined): CardTarget |
   return { cardId: card.id, name: card.name, last4, network: card.network, color: card.color ?? '#444444' };
 }
 
-/** Best and runner-up with their saved last four digits; null when neither has digits saved. */
+/** Best and runner-up with their saved last digits; null when neither has digits saved. */
 function savedTargets(state: StoredState, d: Decision): SavedTargets | null {
   const best = target(state, d.recommendation.cardId);
   const runnerUp = target(state, d.recommendation.runnerUp?.cardId);
   return best || runnerUp ? { best, runnerUp } : null;
-}
-
-async function rescan(tabId: number): Promise<void> {
-  try {
-    await Promise.race([
-      chrome.tabs.sendMessage(tabId, { type: 'rescan' }),
-      new Promise((resolve) => setTimeout(resolve, 400)),
-    ]);
-  } catch {
-    /* no content script in this tab (click-to-check mode) */
-  }
 }
 
 async function popupData(tabId: number): Promise<PopupData> {
@@ -124,9 +92,6 @@ async function popupData(tabId: number): Promise<PopupData> {
     return { supported: false, settings: state.settings, cardsFile: state.cardsFile } as PopupData;
   }
   const e = entry(tabId);
-  if (!e.page || e.page.url !== url) {
-    await rescan(tabId);
-  }
   const page: PageInfo = e.page && e.page.url === url ? e.page : { url, title: tab?.title ?? null };
   const saved = e.saved && e.saved.url === url ? e.saved : null;
   // The popup always recomputes: it is often answering a change the user just made, and
@@ -142,35 +107,23 @@ async function popupData(tabId: number): Promise<PopupData> {
     cardsFile: state.cardsFile,
     capToggles: capTogglesFor(state, d.category),
     savedCategory: state.siteCategories[d.domain] ?? null,
-    never: state.neverSites.includes(d.domain),
     isCheckout: e.checkout?.isCheckout ?? null,
     last4: state.last4,
     saved,
-    canPoint: Boolean(savedTargets(state, d)),
+    canPoint: Boolean(savedTargets(state, d)) && !state.settings.paused,
   };
 }
 
-async function onPage(
-  tabId: number,
-  page: PageInfo,
-  checkout: CheckoutScan,
-  mode: 'auto' | 'click',
-): Promise<{ showPill: boolean; pill: PillData | null; targets: SavedTargets | null }> {
+/** The content script (injected by a click) reports the page; the answer carries the card digits. */
+async function onPage(tabId: number, page: PageInfo, checkout: CheckoutScan): Promise<{ targets: SavedTargets | null }> {
   const state = await loadState();
   const e = entry(tabId);
-  if (e.page?.url !== page.url) e.decision = undefined;
+  // The content script's report is richer than the url and title the popup may have cached.
+  e.decision = undefined;
   e.checkout = checkout;
   const d = decisionFor(state, tabId, page);
   await setBadge(tabId, state, d);
-  const show =
-    checkout.isCheckout &&
-    !state.settings.paused &&
-    !state.neverSites.includes(d.domain) &&
-    e.dismissedUrl !== page.url;
-  // Digits go to the page's content script only when it will use them: on a checkout page that
-  // shows the pill, or when the user pressed "Point to my card" in the popup.
-  const wantTargets = mode === 'click' || show;
-  return { showPill: mode === 'auto' && show, pill: mode === 'auto' && show ? pillData(state, d) : null, targets: wantTargets ? savedTargets(state, d) : null };
+  return { targets: state.settings.paused ? null : savedTargets(state, d) };
 }
 
 function waitForSaved(tabId: number, ms: number): Promise<SavedReport | null> {
@@ -184,7 +137,10 @@ function waitForSaved(tabId: number, ms: number): Promise<SavedReport | null> {
   });
 }
 
-/** Popup button: outline the saved card on this tab. Uses activeTab + the optional scripting permission. */
+/**
+ * Popup asked to outline the saved card on this tab. Runs only after a click on the toolbar icon:
+ * activeTab gives access to this one tab, and scripting (optional, no install warning) injects.
+ */
 async function point(tabId: number): Promise<PopupData> {
   const e = entry(tabId);
   e.saved = undefined;
@@ -202,7 +158,6 @@ async function point(tabId: number): Promise<PopupData> {
   if (!reached) {
     if (!chrome.scripting) return popupData(tabId);
     try {
-      await chrome.scripting.executeScript({ target: { tabId }, func: () => void ((window as unknown as { __bcpMode: string }).__bcpMode = 'click') });
       await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] });
     } catch {
       return popupData(tabId);
@@ -212,22 +167,6 @@ async function point(tabId: number): Promise<PopupData> {
   return popupData(tabId);
 }
 
-async function syncContentScripts(): Promise<boolean> {
-  const state = await loadState();
-  const granted = await chrome.permissions.contains({ permissions: ['scripting'], origins: ['<all_urls>'] });
-  if (!chrome.scripting) return false;
-  const want = state.settings.autoMode && granted && !state.settings.paused;
-  const registered = await chrome.scripting.getRegisteredContentScripts({ ids: [SCRIPT_ID] });
-  if (want && registered.length === 0) {
-    await chrome.scripting.registerContentScripts([
-      { id: SCRIPT_ID, matches: ['<all_urls>'], js: ['content.js'], runAt: 'document_idle', allFrames: false, persistAcrossSessions: true },
-    ]);
-  } else if (!want && registered.length > 0) {
-    await chrome.scripting.unregisterContentScripts({ ids: [SCRIPT_ID] });
-  }
-  return want;
-}
-
 async function updateSettings(patch: Partial<Settings>): Promise<Settings> {
   const state = await loadState();
   const settings = { ...state.settings, ...patch };
@@ -235,25 +174,47 @@ async function updateSettings(patch: Partial<Settings>): Promise<Settings> {
   return settings;
 }
 
+/**
+ * Older builds had an Auto mode that ran on every site. Remove what it left behind: the registered
+ * all-sites script, the all-sites permission and its stored settings.
+ */
+async function removeOldAutoMode(): Promise<void> {
+  try {
+    if (chrome.scripting?.getRegisteredContentScripts) {
+      const old = await chrome.scripting.getRegisteredContentScripts({ ids: [OLD_AUTO_SCRIPT_ID] });
+      if (old.length) await chrome.scripting.unregisterContentScripts({ ids: [OLD_AUTO_SCRIPT_ID] });
+    }
+  } catch {
+    /* nothing registered */
+  }
+  try {
+    if (await chrome.permissions.contains({ origins: ['<all_urls>'] })) await chrome.permissions.remove({ origins: ['<all_urls>'] });
+  } catch {
+    /* not granted, or not removable in this build */
+  }
+  const raw = (await chrome.storage.local.get(['settings', 'neverSites'])) as { settings?: Record<string, unknown>; neverSites?: unknown };
+  if (raw.settings && 'autoMode' in raw.settings) {
+    const { autoMode: _drop, ...rest } = raw.settings;
+    await chrome.storage.local.set({ settings: rest });
+  }
+  if (raw.neverSites !== undefined) await chrome.storage.local.remove('neverSites');
+}
+
 type Msg =
-  | { type: 'page'; page: PageInfo; checkout: CheckoutScan; mode?: 'auto' | 'click' }
+  | { type: 'page'; page: PageInfo; checkout: CheckoutScan }
   | { type: 'saved'; url: string; status: SavedStatus; cardId: string | null; found: number }
   | { type: 'point'; tabId: number }
   | { type: 'popup'; tabId: number }
   | { type: 'setCategory'; tabId: number; domain: string; category: Category | null }
   | { type: 'setForeign'; tabId: number; domain: string; value: boolean | null }
   | { type: 'setCap'; tabId: number; cardId: string; category: Category; reached: boolean }
-  | { type: 'setNever'; tabId: number; domain: string; never: boolean }
-  | { type: 'setSettings'; patch: Partial<Settings> }
-  | { type: 'autoMode'; enabled: boolean }
-  | { type: 'dismiss' }
-  | { type: 'never' };
+  | { type: 'setSettings'; patch: Partial<Settings> };
 
 async function handle(msg: Msg, sender: chrome.runtime.MessageSender): Promise<unknown> {
   const fromTab = sender.tab?.id;
   switch (msg.type) {
     case 'page':
-      return fromTab === undefined ? null : onPage(fromTab, msg.page, msg.checkout, msg.mode === 'click' ? 'click' : 'auto');
+      return fromTab === undefined ? null : onPage(fromTab, msg.page, msg.checkout);
     case 'saved': {
       if (fromTab === undefined) return null;
       const e = entry(fromTab);
@@ -291,34 +252,8 @@ async function handle(msg: Msg, sender: chrome.runtime.MessageSender): Promise<u
       await saveState({ capState });
       return popupData(msg.tabId);
     }
-    case 'setNever': {
-      const state = await loadState();
-      const set = new Set(state.neverSites);
-      if (msg.never) set.add(msg.domain);
-      else set.delete(msg.domain);
-      await saveState({ neverSites: [...set].sort() });
-      return popupData(msg.tabId);
-    }
-    case 'setSettings': {
-      const settings = await updateSettings(msg.patch);
-      await syncContentScripts();
-      return settings;
-    }
-    case 'autoMode': {
-      await updateSettings({ autoMode: msg.enabled });
-      return { active: await syncContentScripts() };
-    }
-    case 'dismiss':
-      if (fromTab !== undefined) entry(fromTab).dismissedUrl = sender.tab?.url ?? entry(fromTab).page?.url;
-      return { ok: true };
-    case 'never': {
-      if (fromTab === undefined) return null;
-      const d = entry(fromTab).decision;
-      if (!d?.domain) return null;
-      const state = await loadState();
-      await saveState({ neverSites: [...new Set([...state.neverSites, d.domain])].sort() });
-      return { ok: true };
-    }
+    case 'setSettings':
+      return updateSettings(msg.patch);
     default:
       return null;
   }
@@ -355,20 +290,12 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
   }
 });
 
-chrome.permissions.onAdded.addListener(() => void syncContentScripts());
-chrome.permissions.onRemoved.addListener(() => {
-  void (async () => {
-    const granted = await chrome.permissions.contains({ permissions: ['scripting'], origins: ['<all_urls>'] });
-    if (!granted) await updateSettings({ autoMode: false });
-    await syncContentScripts().catch(() => false);
-  })();
-});
-chrome.runtime.onInstalled.addListener(() => void syncContentScripts().catch(() => false));
-chrome.runtime.onStartup.addListener(() => void syncContentScripts().catch(() => false));
+chrome.runtime.onInstalled.addListener(() => void removeOldAutoMode().catch(() => undefined));
+chrome.runtime.onStartup.addListener(() => void removeOldAutoMode().catch(() => undefined));
 
-// Test hook (no network, no data): lets the Playwright suite read pill state through the extension.
+// Test hook (no network, no data): lets the Playwright suite read the outline state through the extension.
 (globalThis as unknown as { bcpTest: unknown }).bcpTest = {
-  pillState: (tabId: number) => chrome.tabs.sendMessage(tabId, { type: 'pillState' }),
+  pageState: (tabId: number) => chrome.tabs.sendMessage(tabId, { type: 'pageState' }),
   lastPages: () => [...tabs.values()].map((e) => e.page ?? null),
-  syncContentScripts,
+  removeOldAutoMode,
 };

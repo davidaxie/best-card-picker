@@ -53,3 +53,8 @@ Golden tests: written against these additions from the start (47 cases).
 - `card.last4` pattern loosened from `^[0-9]{4}$` to `^[0-9]{4,5}$` in `data/cards.schema.json` and `src/engine/validate.ts`. Amex shows a 5-digit ending on its own site. The field keeps its name for compatibility.
 - Matching on a checkout page: stored and shown digits match when the shorter is the end of the longer. A stored `12345` matches a page showing `2345`; a page showing all 5 must agree on all 5.
 - iPhone: `ios/Packages/BestCardEngine/Sources/BestCardEngine/Validator.swift` still requires exactly 4, so an exported cards file with a 5-digit value fails there until it is loosened the same way.
+
+## 2026-11-19: Auto mode removed from the extension (click-only)
+
+- Extension storage: `settings.autoMode` and `neverSites` are gone. They are deleted on install, update and browser start, along with the old registered all-sites content script and any `<all_urls>` grant.
+- No change to `data/*.json` or the engine.

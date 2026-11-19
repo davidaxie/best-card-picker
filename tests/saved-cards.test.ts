@@ -210,7 +210,7 @@ describe('privacy and form state', () => {
   }
 
   it('the new content files have no value, checked, click, focus or dispatch calls', () => {
-    for (const f of ['saved-cards.ts', 'highlight.ts', 'main.ts', 'detect.ts', 'pill.ts']) {
+    for (const f of ['saved-cards.ts', 'highlight.ts', 'main.ts', 'detect.ts']) {
       const src = readFileSync(resolve(__dirname, '../src/content', f), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\/\/.*$/gm, '');

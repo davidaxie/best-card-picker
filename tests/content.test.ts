@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { collectPage, scanCheckout } from '../src/content/detect';
-import { chooseCorner } from '../src/content/pill';
 
 const fixture = (name: string) => readFileSync(resolve(__dirname, 'fixtures', name), 'utf8');
 
@@ -93,24 +92,12 @@ describe('privacy: the content script never reads input values', () => {
   });
 
   it('the content script source has no value, FormData or input-event reads', () => {
-    for (const f of ['detect.ts', 'main.ts', 'pill.ts']) {
+    for (const f of ['detect.ts', 'main.ts', 'highlight.ts', 'saved-cards.ts']) {
       const src = readFileSync(resolve(__dirname, '../src/content', f), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\/\/.*$/gm, '');
       expect(src, f).not.toMatch(/\.value\b|FormData|addEventListener\(['"](input|change|keydown|keyup|keypress)['"]|selectionStart|contentDocument|contentWindow/);
     }
-  });
-});
-
-describe('pill placement', () => {
-  it('stays bottom-right when nothing is there, and moves off payment fields', () => {
-    Object.defineProperty(window, 'innerWidth', { value: 1280, configurable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
-    expect(chooseCorner(340, 90, [])).toBe('br');
-    const fieldAtBottomRight = new DOMRect(900, 650, 360, 120);
-    expect(chooseCorner(340, 90, [fieldAtBottomRight])).toBe('tr');
-    const everywhere = [new DOMRect(0, 0, 1280, 800)];
-    expect(['br', 'tr', 'bl', 'tl']).toContain(chooseCorner(340, 90, everywhere));
   });
 });
 

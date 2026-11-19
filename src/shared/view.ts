@@ -57,7 +57,6 @@ export interface PopupData {
   cardsFile: CardsFile;
   capToggles?: CapToggle[];
   savedCategory?: Category | null;
-  never?: boolean;
   isCheckout?: boolean | null;
   /** Saved last four digits by card id (extension pages only). */
   last4?: Record<string, string>;

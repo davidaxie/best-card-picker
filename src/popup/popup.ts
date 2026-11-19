@@ -4,6 +4,8 @@ import { h } from '../shared/dom';
 import { CATEGORY_OPTIONS, categoryLabel, fmtUsd, rateText, type PopupData } from '../shared/view';
 
 const app = document.getElementById('app')!;
+/** True once the user has let the extension look at pages they click it on (optional scripting). */
+let scriptingGranted = false;
 
 async function currentTabId(): Promise<number | null> {
   const fromQuery = new URLSearchParams(location.search).get('tab');
@@ -35,7 +37,7 @@ function render(data: PopupData): void {
     app.append(
       h('h1', {}, 'Best Card Picker'),
       h('p', { class: 'muted' }, 'Open a shopping site, then click the toolbar icon to check which card to use.'),
-      footer(data),
+      footer(),
     );
     return;
   }
@@ -63,11 +65,16 @@ function render(data: PopupData): void {
 
   const savedLine = savedText(data, card?.name, runner?.name, digits);
   if (savedLine) app.append(h('p', { class: 'saved', id: 'saved' }, savedLine));
-  if (data.canPoint) {
-    app.append(
-      h('button', { class: 'link', id: 'point', onclick: () => void pointHere(tabId) }, 'Point to my card on this page'),
-    );
-  }
+  // Before the first "yes", one button asks Chrome. After that, every click on the icon reads the
+  // page by itself and this button only re-runs it (a checkout that changed after opening).
+  const pointLabel = !scriptingGranted
+    ? data.canPoint
+      ? 'Point to my card on this page'
+      : 'Check this page'
+    : data.canPoint
+      ? 'Look for my card again'
+      : null;
+  if (pointLabel && !data.settings?.paused) app.append(h('button', { class: 'link', id: 'point', onclick: () => void pointHere(tabId) }, pointLabel));
 
   for (const w of r.warnings) app.append(h('p', { class: 'warn', 'data-code': w.code }, w.message));
   if (data.settings?.paused) app.append(h('p', { class: 'warn' }, 'Paused: the pill and badge are off on all sites.'));
@@ -130,13 +137,7 @@ function render(data: PopupData): void {
     app.append(caps);
   }
 
-  const neverBox = h('input', {
-    type: 'checkbox',
-    id: 'never',
-    checked: data.never === true,
-    onchange: () => void send({ type: 'setNever', tabId, domain: d.domain, never: neverBox.checked }).then(render),
-  });
-  app.append(h('section', {}, h('label', {}, neverBox, 'Never show the pill on this site')), footer(data));
+  app.append(footer());
 }
 
 function savedText(data: PopupData, bestName: string | undefined, runnerName: string | undefined, digits: (id: string | undefined) => string): string | null {
@@ -165,20 +166,33 @@ async function pointHere(tabId: number): Promise<void> {
     document.getElementById('point')?.replaceWith(h('p', { class: 'warn' }, 'Chrome did not allow the extension to look at this page.'));
     return;
   }
+  scriptingGranted = true;
   render(await send({ type: 'point', tabId }));
 }
 
-function footer(data: PopupData): HTMLElement {
+function footer(): HTMLElement {
   return h(
     'div',
     { class: 'foot' },
     h('button', { class: 'link', onclick: () => void chrome.runtime.openOptionsPage() }, 'Cards and settings'),
-    h('span', { class: 'tag' }, data.settings?.autoMode ? 'Auto mode on' : 'Click-to-check mode'),
+    h('span', { class: 'tag' }, 'Runs only when you click the icon'),
   );
 }
 
 void (async () => {
   const tabId = await currentTabId();
   if (tabId === null) return render({ supported: false } as PopupData);
-  render(await send({ type: 'popup', tabId }));
+  try {
+    scriptingGranted = await chrome.permissions.contains({ permissions: ['scripting'] });
+  } catch {
+    scriptingGranted = false;
+  }
+  const data = await send({ type: 'popup', tabId });
+  render(data);
+  // This popup opening is the user's click. If they already allowed it once, read the page and
+  // outline the card now.
+  if (data.supported && scriptingGranted && !data.settings?.paused) {
+    document.getElementById('point')?.replaceWith(h('p', { class: 'saved', id: 'looking' }, 'Looking for your saved card on this page…'));
+    render(await send({ type: 'point', tabId }));
+  }
 })();

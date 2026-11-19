@@ -106,38 +106,38 @@ async function tabIdFor(ext: Ext, url: string): Promise<number> {
     .then(() => ext.sw.evaluate(async (u) => (await chrome.tabs.query({})).find((t) => t.url === u)!.id!, url));
 }
 
-interface PillState {
-  shown: boolean;
-  count: number;
-  corner: string | null;
-  pill: { cardName: string; rateText: string; runnerUpName: string | null; detail: string; warnings: string[]; last4: string | null; savedNote?: string | null } | null;
-  mode?: 'auto' | 'click';
-  saved?: string | null;
-  highlight?: { shown: boolean; label: string | null; count: number };
+interface PageState {
+  saved: string | null;
+  highlight: { shown: boolean; label: string | null; count: number };
+  following: boolean;
 }
 
-async function pillState(ext: Ext, tabId: number): Promise<PillState | null> {
+/** What the injected content script reports, or null when nothing has been injected into the tab. */
+async function pageState(ext: Ext, tabId: number): Promise<PageState | null> {
   try {
-    return await ext.sw.evaluate(
-      (t) => (globalThis as unknown as { bcpTest: { pillState: (id: number) => Promise<unknown> } }).bcpTest.pillState(t),
+    return (await ext.sw.evaluate(
+      (t) => (globalThis as unknown as { bcpTest: { pageState: (id: number) => Promise<unknown> } }).bcpTest.pageState(t),
       tabId,
-    ) as PillState;
+    )) as PageState;
   } catch {
-    return null; // content script not ready yet
+    return null; // no content script in this tab
   }
 }
 
-async function waitForPill(ext: Ext, tabId: number): Promise<PillState> {
-  await expect.poll(async () => (await pillState(ext, tabId))?.shown ?? false, { timeout: 10_000 }).toBe(true);
-  return (await pillState(ext, tabId))!;
+/** Nothing of ours is in the page: no content script, no overlay. */
+async function expectUntouched(ext: Ext, page: Page, tabId: number): Promise<void> {
+  expect(await pageState(ext, tabId)).toBeNull();
+  expect(await page.locator('bcp-highlight-host').count()).toBe(0);
+  expect(await page.evaluate(() => (window as unknown as { __bcpLoaded?: boolean }).__bcpLoaded ?? null)).toBeNull();
 }
 
-async function enableAutoMode(ext: Ext): Promise<void> {
-  const options = await ext.ctx.newPage();
-  await options.goto(`chrome-extension://${ext.id}/options/index.html`);
-  await options.locator('#autoMode').check();
-  await expect(options.locator('#status')).toContainText('Auto mode on');
-  await options.close();
+/** First use: the popup's button asks Chrome for the optional scripting permission, then reads the page. */
+async function clickPoint(popup: Page): Promise<void> {
+  await popup.locator('#point').click();
+  // Afterwards the button is gone (no digits saved) or offers to look again.
+  await expect
+    .poll(() => popup.evaluate(() => document.getElementById('point')?.textContent ?? 'gone'))
+    .toMatch(/^(gone|Look for my card again)$/);
 }
 
 async function openPopup(ext: Ext, tabId: number): Promise<Page> {
@@ -162,7 +162,7 @@ test('built extension: permissions, CSP and no network APIs in dist/', () => {
   const manifest = JSON.parse(readFileSync(join(DIST, 'manifest.json'), 'utf8'));
   expect(manifest.manifest_version).toBe(3);
   expect(manifest.permissions).toEqual(['storage', 'activeTab']);
-  expect(manifest.optional_host_permissions).toEqual(['<all_urls>']);
+  expect(manifest.optional_host_permissions).toBeUndefined();
   expect(manifest.optional_permissions).toEqual(['scripting']);
   expect(manifest.host_permissions).toBeUndefined();
   expect(manifest.content_scripts).toBeUndefined();
@@ -206,87 +206,97 @@ test('click-to-check: unknown site asks for a category and the answer survives a
   await ext.ctx.close();
 });
 
-test('click-to-check: popup shows best card, runner-up, badge and no pill without Auto mode', async () => {
+test('click-only: nothing runs on any page until the toolbar icon is clicked', async () => {
   const ext = await launch(newProfile());
+  await ext.sw.evaluate(async () => chrome.storage.local.set({ last4: { 'amex-gold': '0001', 'amex-blue-cash-everyday': '0006' } }));
+  // scripting is optional and not granted yet, so nothing can be registered or injected.
+  expect(await ext.sw.evaluate(() => typeof chrome.scripting)).toBe('undefined');
+  for (const key of ['amazonSaved', 'doordashSaved', 'united', 'instacart', 'airbnb']) {
+    const page = await ext.ctx.newPage();
+    await page.goto(PAGES[key]!);
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(800);
+    await expectUntouched(ext, page, await tabIdFor(ext, PAGES[key]!));
+    await page.close();
+  }
+  assertNoExtensionNetwork(ext);
+  await ext.ctx.close();
+});
+
+test('click-to-check: the popup shows the expected card on the five PRD checkout pages', async () => {
+  const ext = await launch(newProfile());
+  const expected: [string, string, string][] = [
+    ['amazon', 'Amex Blue Cash Everyday · 3%', 'Chase Freedom Unlimited'],
+    ['doordash', 'Amex Gold · 4x', 'Chase Sapphire Preferred'],
+    ['united', 'United Explorer · 3x', 'Amex Gold'],
+    ['instacart', 'Chase Sapphire Preferred · 3x', 'Chase Freedom Unlimited'],
+    ['airbnb', 'Chase Sapphire Preferred · 3x', 'Chase Freedom Unlimited'],
+  ];
+  for (const [key, best, runner] of expected) {
+    const page = await ext.ctx.newPage();
+    await page.goto(PAGES[key]!);
+    const tabId = await tabIdFor(ext, PAGES[key]!);
+    const popup = await openPopup(ext, tabId);
+    await expect(popup.locator('#best'), key).toContainText(best);
+    await expect(popup.locator('#runner-up'), key).toContainText(runner);
+    await popup.close();
+    await page.close();
+  }
+  // DoorDash details and badge.
   const page = await ext.ctx.newPage();
   await page.goto(PAGES.doordash!);
   const tabId = await tabIdFor(ext, PAGES.doordash!);
   const popup = await openPopup(ext, tabId);
-  await expect(popup.locator('#best')).toContainText('Amex Gold · 4x');
   await expect(popup.locator('#reason')).toHaveText('4x at restaurants, about 8 cents per dollar');
-  await expect(popup.locator('#runner-up')).toContainText('Chase Sapphire Preferred');
   await expect(popup.locator('#category')).toHaveValue('restaurant');
   expect(await ext.sw.evaluate((t) => chrome.action.getBadgeText({ tabId: t }), tabId)).toBe('GOLD');
-  expect(await pillState(ext, tabId)).toBeNull(); // no content script registered
-  expect(await page.locator('bcp-pill-host').count()).toBe(0);
+  // Before the first "yes", opening the popup reads nothing from the page.
+  await expect(popup.locator('#point')).toHaveText('Check this page');
+  await expectUntouched(ext, page, tabId);
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });
 
-test('auto mode: the pill shows the expected card on the five PRD checkout pages', async () => {
+test('click-to-check: after one "Check this page", each click reads the page (GBP prices, foreign fees)', async () => {
   const ext = await launch(newProfile());
-  await enableAutoMode(ext);
-  const expected: [string, string, string][] = [
-    ['amazon', 'Amex Blue Cash Everyday', 'Use Amex Blue Cash Everyday · 3% · runner-up Chase Freedom Unlimited'],
-    ['doordash', 'Amex Gold', 'Use Amex Gold · 4x · runner-up Chase Sapphire Preferred'],
-    ['united', 'United Explorer', 'Use United Explorer · 3x · runner-up Amex Gold'],
-    ['instacart', 'Chase Sapphire Preferred', 'Use Chase Sapphire Preferred · 3x · runner-up Chase Freedom Unlimited'],
-    ['airbnb', 'Chase Sapphire Preferred', 'Use Chase Sapphire Preferred · 3x · runner-up Chase Freedom Unlimited'],
-  ];
-  for (const [key, cardName, line] of expected) {
-    const page = await ext.ctx.newPage();
-    await page.goto(PAGES[key]!);
-    const tabId = await tabIdFor(ext, PAGES[key]!);
-    const s = await waitForPill(ext, tabId);
-    expect(s.pill?.cardName, key).toBe(cardName);
-    expect(`Use ${s.pill!.cardName} · ${s.pill!.rateText} · runner-up ${s.pill!.runnerUpName}`).toBe(line);
-    expect(s.count, `${key}: at most one pill`).toBe(1);
-    expect(await page.locator('bcp-pill-host').count()).toBe(1);
-    await page.close();
-  }
-  // Not a checkout page: badge but no pill.
-  const product = await ext.ctx.newPage();
-  await product.goto(PAGES.amazonProduct!);
-  const productTab = await tabIdFor(ext, PAGES.amazonProduct!);
-  await expect.poll(async () => ext.sw.evaluate((t) => chrome.action.getBadgeText({ tabId: t }), productTab)).toBe('BCE');
-  expect((await pillState(ext, productTab))?.shown).toBe(false);
-  assertNoExtensionNetwork(ext);
-  await ext.ctx.close();
-});
-
-test('auto mode: a GBP site warns about foreign fees and never recommends FU or BCE', async () => {
-  const ext = await launch(newProfile());
-  await enableAutoMode(ext);
   const page = await ext.ctx.newPage();
   await page.goto(PAGES.gbp!);
   const tabId = await tabIdFor(ext, PAGES.gbp!);
-  const s = await waitForPill(ext, tabId);
-  expect(['Chase Freedom Unlimited', 'Amex Blue Cash Everyday']).not.toContain(s.pill!.cardName);
-  expect(s.pill!.warnings.join(' ')).toMatch(/Foreign purchase: avoid Chase Freedom Unlimited \(3% fee\), Amex Blue Cash Everyday \(2\.7% fee\)/);
-  const popup = await openPopup(ext, tabId);
+  let popup = await openPopup(ext, tabId);
+  await expect(popup.locator('#best')).not.toContainText('Chase Freedom Unlimited');
+  await clickPoint(popup);
+  await expect(popup.locator('.tag', { hasText: 'Detected:' })).toContainText('prices in GBP');
   await expect(popup.locator('[data-code="foreign_fees"]')).toBeVisible();
   await expect(popup.locator('#foreign')).toBeChecked();
-  await expect(popup.locator('.tag', { hasText: 'Detected:' })).toContainText('prices in GBP');
+  for (const name of ['Chase Freedom Unlimited', 'Amex Blue Cash Everyday']) await expect(popup.locator('#best')).not.toContainText(name);
+  await popup.close();
+
+  // A later click on another page reads it without the button.
+  const pizza = await ext.ctx.newPage();
+  await pizza.goto(PAGES.pizzeria!);
+  const pizzaTab = await tabIdFor(ext, PAGES.pizzeria!);
+  popup = await openPopup(ext, pizzaTab);
+  await expect(popup.locator('#ask')).toContainText('looks like restaurants');
+  await expect(popup.locator('#best')).toContainText('Amex Gold');
+  expect(await pageState(ext, pizzaTab)).not.toBeNull();
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });
 
 test('privacy: typed text in a fake card field never reaches the extension', async () => {
   const ext = await launch(newProfile());
-  await enableAutoMode(ext);
   const page = await ext.ctx.newPage();
   await page.goto(PAGES.united!);
   const tabId = await tabIdFor(ext, PAGES.united!);
-  await waitForPill(ext, tabId);
   const typed = 'TYPED-SECRET-not-a-card';
   for (const sel of ['#ccname', '#ccnumber', '#ccexp', '#cccsc']) await page.locator(sel).fill(typed);
-  // Make the content script scan again with the fields filled, then inspect what it sent.
-  await ext.sw.evaluate((t) => chrome.tabs.sendMessage(t, { type: 'rescan' }), tabId);
+  const popup = await openPopup(ext, tabId);
+  await clickPoint(popup);
+  await expect.poll(async () => pageState(ext, tabId)).not.toBeNull();
   const sent = await ext.sw.evaluate(async (t) => {
     const messages: unknown[] = [];
-    // Everything the service worker knows about this tab, plus everything in storage.
     messages.push(await chrome.storage.local.get(null));
-    messages.push(await (globalThis as unknown as { bcpTest: { pillState: (id: number) => Promise<unknown> } }).bcpTest.pillState(t));
+    messages.push(await (globalThis as unknown as { bcpTest: { pageState: (id: number) => Promise<unknown> } }).bcpTest.pageState(t));
     return JSON.stringify(messages);
   }, tabId);
   expect(sent).not.toContain('TYPED-SECRET');
@@ -297,52 +307,27 @@ test('privacy: typed text in a fake card field never reaches the extension', asy
   await ext.ctx.close();
 });
 
-test('pill: stays off payment fields, "Not now" hides it, "Never on this site" sticks, pause turns it off', async () => {
+test('upgrade: leftovers from the old Auto mode are removed; pause stops the outline', async () => {
   const ext = await launch(newProfile());
-  await enableAutoMode(ext);
-  const page = await ext.ctx.newPage();
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(PAGES.unitedCorner!);
-  const tabId = await tabIdFor(ext, PAGES.unitedCorner!);
-  const s = await waitForPill(ext, tabId);
-  expect(s.corner).not.toBe('br'); // the card form sits in the bottom-right corner
-  const pillBox = (await page.locator('bcp-pill-host').boundingBox())!;
-  const formBox = (await page.locator('form').boundingBox())!;
-  const overlaps =
-    pillBox.x < formBox.x + formBox.width && formBox.x < pillBox.x + pillBox.width &&
-    pillBox.y < formBox.y + formBox.height && formBox.y < pillBox.y + pillBox.height;
-  expect(overlaps).toBe(false);
-
-  // "Not now": first button in the pill's bottom row.
-  await page.mouse.click(pillBox.x + 40, pillBox.y + pillBox.height - 22);
-  await expect(page.locator('bcp-pill-host')).toHaveCount(0);
-
-  // "Not now" holds for this page in this tab, even across a reload.
-  await page.reload();
-  await page.waitForTimeout(1500);
-  expect((await pillState(ext, tabId))?.shown).toBe(false);
+  await ext.sw.evaluate(async () =>
+    chrome.storage.local.set({ settings: { paused: false, autoMode: true, preferCashOnTie: true }, neverSites: ['united.com'] }),
+  );
+  await ext.sw.evaluate(() => (globalThis as unknown as { bcpTest: { removeOldAutoMode: () => Promise<void> } }).bcpTest.removeOldAutoMode());
+  expect(await storage(ext, 'settings')).toEqual({ paused: false, preferCashOnTie: true });
   expect(await storage(ext, 'neverSites')).toBeUndefined();
 
-  // Another checkout page on the same site shows it again; "Never on this site" is the second button.
-  await page.goto(PAGES.united!);
-  await waitForPill(ext, tabId);
-  const box2 = (await page.locator('bcp-pill-host').boundingBox())!;
-  await page.mouse.click(box2.x + 150, box2.y + box2.height - 22);
-  await expect(page.locator('bcp-pill-host')).toHaveCount(0);
-  await expect.poll(() => storage(ext, 'neverSites')).toEqual(['united.com']);
-  await page.goto(PAGES.unitedCorner!);
-  await page.waitForTimeout(1500);
-  expect((await pillState(ext, tabId))?.shown).toBe(false);
-
-  // Pause: no pill anywhere.
   const options = await ext.ctx.newPage();
   await options.goto(`chrome-extension://${ext.id}/options/index.html`);
+  await expect(options.locator('#autoMode')).toHaveCount(0);
   await options.locator('#paused').check();
   await expect(options.locator('#status')).toContainText('Paused');
-  const dd = await ext.ctx.newPage();
-  await dd.goto(PAGES.doordash!);
-  await page.waitForTimeout(1500);
-  expect(await dd.locator('bcp-pill-host').count()).toBe(0);
+  await ext.sw.evaluate(async () => chrome.storage.local.set({ last4: { 'amex-gold': '0001' } }));
+  const page = await ext.ctx.newPage();
+  await page.goto(PAGES.doordashSaved!);
+  const tabId = await tabIdFor(ext, PAGES.doordashSaved!);
+  const popup = await openPopup(ext, tabId);
+  await expect(popup.locator('#point')).toHaveCount(0);
+  await expectUntouched(ext, page, tabId);
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });
@@ -419,21 +404,6 @@ test('options: exporting and re-importing cards.json changes nothing; reset rest
   await ext.ctx.close();
 });
 
-test('page hints: a restaurant found only through schema.org gets Amex Gold and a confirm prompt', async () => {
-  const ext = await launch(newProfile());
-  await enableAutoMode(ext);
-  const page = await ext.ctx.newPage();
-  await page.goto(PAGES.pizzeria!);
-  const tabId = await tabIdFor(ext, PAGES.pizzeria!);
-  const s = await waitForPill(ext, tabId);
-  expect(s.pill!.cardName).toBe('Amex Gold');
-  expect(s.pill!.detail).toContain('Unknown store');
-  const popup = await openPopup(ext, tabId);
-  await expect(popup.locator('#ask')).toContainText('looks like restaurants');
-  assertNoExtensionNetwork(ext);
-  await ext.ctx.close();
-});
-
 // ---------------------------------------------------------------------------
 // Saved-card highlight. Fake digits only: Gold 0001, CSP 0002, FU 0003, UA 0004, AA 0005, BCE 0006.
 
@@ -462,9 +432,9 @@ async function formSnapshot(page: Page): Promise<unknown> {
   }));
 }
 
-async function waitForHighlight(ext: Ext, tabId: number): Promise<PillState> {
-  await expect.poll(async () => (await pillState(ext, tabId))?.highlight?.shown ?? false, { timeout: 10_000 }).toBe(true);
-  return (await pillState(ext, tabId))!;
+async function waitForHighlight(ext: Ext, tabId: number): Promise<PageState> {
+  await expect.poll(async () => (await pageState(ext, tabId))?.highlight?.shown ?? false, { timeout: 10_000 }).toBe(true);
+  return (await pageState(ext, tabId))!;
 }
 
 /** The overlay sits on the row: its box contains the row's box (plus a few pixels of padding). */
@@ -481,111 +451,72 @@ async function expectOutlined(page: Page, rowSelector: string): Promise<void> {
   expect(r.host.r - r.host.l - (r.row.r - r.row.l)).toBeLessThan(12);
 }
 
-test('saved cards: Auto mode outlines the best saved card and never touches the form', async () => {
+test('saved cards: a click outlines the best saved card and never touches the form', async () => {
   const ext = await launch(newProfile());
-  await enableAutoMode(ext);
   await setLast4(ext, FAKE_LAST4);
 
   const cases = [
-    { key: 'amazonSaved', card: 'Amex Blue Cash Everyday', last4: '0006', label: 'Best card', row: '#row-amex', saved: 'best', note: 'Outlined on the page' },
-    { key: 'doordashSaved', card: 'Amex Gold', last4: '0001', label: 'Best card', row: '#row-amex', saved: 'best', note: 'Outlined on the page' },
-    {
-      key: 'targetSaved',
-      card: 'Amex Blue Cash Everyday',
-      last4: '0006',
-      label: 'Runner-up',
-      row: '#row-visa',
-      saved: 'runnerUp',
-      note: "Your best card isn't saved here; Chase Freedom Unlimited ••0003 is",
-    },
+    { key: 'amazonSaved', card: 'Amex Blue Cash Everyday', last4: '0006', label: 'Best card', row: '#row-amex', saved: 'best' },
+    { key: 'doordashSaved', card: 'Amex Gold', last4: '0001', label: 'Best card', row: '#row-amex', saved: 'best' },
+    { key: 'targetSaved', card: 'Amex Blue Cash Everyday', last4: '0006', label: 'Runner-up', row: '#row-visa', saved: 'runnerUp' },
   ];
+  let first = true;
   for (const c of cases) {
     const page = await ext.ctx.newPage();
     await page.goto(PAGES[c.key]!);
     await page.waitForLoadState('load');
     const before = await formSnapshot(page);
     const tabId = await tabIdFor(ext, PAGES[c.key]!);
+    await page.waitForTimeout(500);
+    await expectUntouched(ext, page, tabId); // nothing until the click
+
+    const popup = await openPopup(ext, tabId);
+    await expect(popup.locator('#best')).toContainText(`${c.card} ••${c.last4}`);
+    if (first) {
+      await expect(popup.locator('#point')).toHaveText('Point to my card on this page');
+      await clickPoint(popup);
+      first = false;
+    } // later clicks on the icon outline without the button
     const st = await waitForHighlight(ext, tabId);
     expect(st.highlight, c.key).toMatchObject({ shown: true, label: c.label, count: 1 });
     expect(st.saved, c.key).toBe(c.saved);
-    await expect.poll(async () => (await pillState(ext, tabId))?.pill?.savedNote ?? '', { timeout: 5000 }).toContain(c.note);
-    const pill = (await pillState(ext, tabId))!.pill!;
-    expect(pill.cardName, c.key).toBe(c.card);
-    expect(pill.last4, c.key).toBe(c.last4);
+    if (c.saved === 'runnerUp') await expect(popup.locator('#saved')).toContainText("isn't saved on this site; Chase Freedom Unlimited ••0003");
+    else await expect(popup.locator('#saved')).toContainText(`Outlined on the page: your saved ${c.card} ••${c.last4}`);
+    await expect(popup.locator('#point')).toHaveText('Look for my card again');
     await expectOutlined(page, c.row);
     const shots = process.env.BCP_SHOTS; // optional: save screenshots of the outline for a human to look at
     if (shots) await page.waitForTimeout(500).then(() => page.screenshot({ path: join(shots, `${c.key}.png`) }));
-    // Scrolling moves the outline with the row.
     await page.mouse.wheel(0, 120);
     await page.waitForTimeout(150);
     await expectOutlined(page, c.row);
 
+    // Pressing it again reuses the injected script: still one outline.
+    await popup.locator('#point').click();
+    await expect(popup.locator('#saved')).toContainText(c.saved === 'best' ? 'Outlined' : "isn't saved");
+    expect((await pageState(ext, tabId))?.highlight.count).toBe(1);
+    await popup.close();
+
     const after = await formSnapshot(page);
     expect(after, `${c.key}: form state`).toEqual(before);
     expect((after as { events: string[] }).events, `${c.key}: events`).toEqual([]);
-
-    const popup = await openPopup(ext, tabId);
-    await expect(popup.locator('#best')).toContainText(`${c.card} ••${c.last4}`);
-    await expect(popup.locator('#saved')).toBeVisible();
-    if (c.saved === 'runnerUp') await expect(popup.locator('#saved')).toContainText("isn't saved on this site; Chase Freedom Unlimited ••0003");
-    else await expect(popup.locator('#saved')).toContainText(`Outlined on the page: your saved ${c.card} ••${c.last4}`);
-    await popup.close();
-    expect(await formSnapshot(page), `${c.key}: form state after popup`).toEqual(before);
     await page.close();
   }
-
-  // Without saved digits there is no outline and the pill has no last four.
-  await setLast4(ext, {});
-  const page = await ext.ctx.newPage();
-  await page.goto(PAGES.amazonSaved!);
-  const tabId = await tabIdFor(ext, PAGES.amazonSaved!);
-  const st = await waitForPill(ext, tabId);
-  expect(st.pill?.last4).toBeNull();
-  expect(st.highlight?.shown).toBe(false);
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });
 
 test('saved cards: a 5-digit Amex ending matches a page that prints only the last 4', async () => {
   const ext = await launch(newProfile());
-  await enableAutoMode(ext);
   await setLast4(ext, { ...FAKE_LAST4, 'amex-gold': '10001' });
   const page = await ext.ctx.newPage();
   await page.goto(PAGES.doordashSaved!); // shows "x0001"
   const tabId = await tabIdFor(ext, PAGES.doordashSaved!);
-  const st = await waitForHighlight(ext, tabId);
-  expect(st.highlight).toMatchObject({ shown: true, label: 'Best card' });
-  expect(st.pill?.last4).toBe('10001');
-  await expectOutlined(page, '#row-amex');
   const popup = await openPopup(ext, tabId);
   await expect(popup.locator('#best')).toContainText('Amex Gold ••10001');
-  assertNoExtensionNetwork(ext);
-  await ext.ctx.close();
-});
-
-test('saved cards: click mode outlines the card from the popup button, with no pill', async () => {
-  const ext = await launch(newProfile());
-  await setLast4(ext, FAKE_LAST4);
-  const page = await ext.ctx.newPage();
-  await page.goto(PAGES.doordashSaved!);
-  await page.waitForLoadState('load');
-  const before = await formSnapshot(page);
-  const tabId = await tabIdFor(ext, PAGES.doordashSaved!);
-  expect(await pillState(ext, tabId)).toBeNull(); // no content script yet
-
-  const popup = await openPopup(ext, tabId);
-  await expect(popup.locator('#best')).toContainText('Amex Gold ••0001');
-  await popup.locator('#point').click();
-  await expect(popup.locator('#saved')).toContainText('Outlined on the page: your saved Amex Gold ••0001');
+  await clickPoint(popup);
   const st = await waitForHighlight(ext, tabId);
-  expect(st).toMatchObject({ shown: false, mode: 'click', saved: 'best', highlight: { shown: true, label: 'Best card' } });
+  expect(st.highlight).toMatchObject({ shown: true, label: 'Best card' });
   await expectOutlined(page, '#row-amex');
-  expect(await formSnapshot(page)).toEqual(before);
-
-  // Pressing it again reuses the injected script: still one outline.
-  await popup.locator('#point').click();
-  await expect(popup.locator('#saved')).toContainText('Outlined');
-  expect((await pillState(ext, tabId))?.highlight?.count).toBe(1);
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });

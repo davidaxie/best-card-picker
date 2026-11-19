@@ -47,7 +47,7 @@ const NETWORK_WORDS: [Network, RegExp][] = [
 
 const ROW_SELECTOR = 'label, li, tr, [role="radio"], [role="option"], [role="listitem"], [role="row"], [role="menuitemradio"]';
 const SKIP_PARENTS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'TEXTAREA', 'SELECT', 'OPTION']);
-const OWN_HOSTS = 'bcp-pill-host, bcp-highlight-host';
+const OWN_HOSTS = 'bcp-highlight-host';
 const MAX_TEXT_NODES = 20000;
 
 export function last4sIn(text: string): string[] {

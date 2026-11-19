@@ -3,10 +3,8 @@ import defaultCards from '../../data/cards.json';
 import type { CapState, CardsFile, Category } from '../engine';
 
 export interface Settings {
-  /** Pause switch for all sites: no pill, no badge. */
+  /** Pause switch: no badge and no outline. */
   paused: boolean;
-  /** User turned on Auto mode and granted <all_urls> + scripting. */
-  autoMode: boolean;
   /** PRD default: cash wins value ties. */
   preferCashOnTie: boolean;
 }
@@ -19,8 +17,6 @@ export interface StoredState {
   siteForeign: Record<string, boolean>;
   capState: CapState;
   settings: Settings;
-  /** Registrable domains where the pill is never shown. */
-  neverSites: string[];
   /**
    * Optional last four digits per card id. Kept apart from cardsFile so the digits never ride along
    * in an export (unless the user ticks the box) or in anything that copies the rules file.
@@ -28,7 +24,7 @@ export interface StoredState {
   last4: Record<string, string>;
 }
 
-export const DEFAULT_SETTINGS: Settings = { paused: false, autoMode: false, preferCashOnTie: true };
+export const DEFAULT_SETTINGS: Settings = { paused: false, preferCashOnTie: true };
 
 export function defaultCardsFile(): CardsFile {
   return JSON.parse(JSON.stringify(defaultCards)) as CardsFile;
@@ -41,12 +37,11 @@ export function defaultState(): StoredState {
     siteForeign: {},
     capState: {},
     settings: { ...DEFAULT_SETTINGS },
-    neverSites: [],
     last4: {},
   };
 }
 
-export const STATE_KEYS = ['cardsFile', 'siteCategories', 'siteForeign', 'capState', 'settings', 'neverSites', 'last4'] as const;
+export const STATE_KEYS = ['cardsFile', 'siteCategories', 'siteForeign', 'capState', 'settings', 'last4'] as const;
 
 /** 4 digits, or 5 (Amex shows a 5-digit ending on its own site). The key stays named last4. */
 export const LAST4_RE = /^\d{4,5}$/;
@@ -89,8 +84,7 @@ export async function loadState(): Promise<StoredState> {
     siteCategories: raw.siteCategories ?? {},
     siteForeign: raw.siteForeign ?? {},
     capState: raw.capState ?? {},
-    settings: { ...DEFAULT_SETTINGS, ...(raw.settings ?? {}) },
-    neverSites: raw.neverSites ?? [],
+    settings: { paused: raw.settings?.paused ?? DEFAULT_SETTINGS.paused, preferCashOnTie: raw.settings?.preferCashOnTie ?? DEFAULT_SETTINGS.preferCashOnTie },
     last4,
   };
 }
@@ -99,7 +93,7 @@ export async function saveState(patch: Partial<StoredState>): Promise<void> {
   await chrome.storage.local.set(patch);
 }
 
-/** "Clear all data": per-site choices, cap toggles, never-sites, settings and last four digits. Card rules are kept unless asked. */
+/** "Clear all data": per-site choices, cap toggles, settings and last digits. Card rules are kept unless asked. */
 export async function clearAllData(includeCards: boolean): Promise<void> {
   if (includeCards) await chrome.storage.local.clear();
   else await chrome.storage.local.remove(['siteCategories', 'siteForeign', 'capState', 'settings', 'neverSites', 'last4']);
