@@ -26,4 +26,5 @@ copy_if_changed() {
 mkdir -p "$ENGINE_RES" "$TEST_RES"
 copy_if_changed "$SRC/cards.json" "$ENGINE_RES/cards.json"
 copy_if_changed "$SRC/merchants.json" "$ENGINE_RES/merchants.json"
+copy_if_changed "$SRC/categories.json" "$ENGINE_RES/categories.json"
 copy_if_changed "$SRC/golden_tests.json" "$TEST_RES/golden_tests.json"

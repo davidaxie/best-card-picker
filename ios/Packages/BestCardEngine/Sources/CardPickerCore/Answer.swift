@@ -19,7 +19,7 @@ public struct Answer: Equatable, Sendable {
 
     /// The reason line, prefixed with "Likely" for MapKit-based answers.
     public var reasonLine: String {
-        likely ? "Likely \(Categories.label(recommendation.category).lowercased()): \(recommendation.reason)" : recommendation.reason
+        likely ? "Likely \(recommendation.reason)" : recommendation.reason
     }
 
     public var runnerUpLine: String? {

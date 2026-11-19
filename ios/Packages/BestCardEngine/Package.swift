@@ -12,11 +12,11 @@ let package = Package(
         .library(name: "CardPickerCore", targets: ["CardPickerCore"]),
     ],
     targets: [
-        // Pure scoring logic. Bundles a copy of data/cards.json and
-        // data/merchants.json (refreshed by ios/scripts/sync-shared-data.sh).
+        // Pure scoring logic. Bundles copies of data/cards.json,
+        // data/merchants.json and data/categories.json (refreshed by ios/scripts/sync-shared-data.sh).
         .target(
             name: "BestCardEngine",
-            resources: [.copy("Resources/cards.json"), .copy("Resources/merchants.json")],
+            resources: [.copy("Resources/cards.json"), .copy("Resources/merchants.json"), .copy("Resources/categories.json")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         // Storage, settings, saved places, MapKit category mapping.

@@ -53,7 +53,7 @@ struct CoreTests {
 
     @Test func likelyPrefixForMapKitAnswers() {
         let answer = data.answer(for: PurchaseContext(category: "restaurant", merchant: "Some Cafe", channel: .inStore), likely: true)!
-        #expect(answer.reasonLine.hasPrefix("Likely restaurant:"))
+        #expect(answer.reasonLine == "Likely 4x at restaurants, about 8 cents per dollar")
     }
 
     @Test func capToggleFallsBackToBase() {

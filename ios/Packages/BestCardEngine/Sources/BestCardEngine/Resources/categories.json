@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "categories": [
+    { "id": "restaurant", "label": "Restaurants and food delivery", "phrase": "at restaurants" },
+    { "id": "us_supermarket", "label": "US supermarkets", "phrase": "at US supermarkets" },
+    { "id": "online_grocery", "label": "Online grocery", "phrase": "on online grocery" },
+    { "id": "gas_ev", "label": "Gas and EV charging", "phrase": "on gas and EV charging" },
+    { "id": "streaming", "label": "Streaming", "phrase": "on streaming" },
+    { "id": "drugstore", "label": "Drugstores", "phrase": "at drugstores" },
+    { "id": "us_online_retail", "label": "US online retail", "phrase": "on US online retail" },
+    { "id": "airline_united", "label": "United Airlines", "phrase": "on United" },
+    { "id": "airline_aa", "label": "American Airlines", "phrase": "on American" },
+    { "id": "airline_direct", "label": "Airlines (direct)", "phrase": "on flights booked with the airline" },
+    { "id": "hotel_direct", "label": "Hotels (direct)", "phrase": "on hotels" },
+    { "id": "chase_travel", "label": "Chase Travel portal", "phrase": "through Chase Travel" },
+    { "id": "amex_travel_prepaid_hotel", "label": "Amex Travel prepaid hotels", "phrase": "on Amex Travel prepaid hotels" },
+    { "id": "vacation_rental", "label": "Vacation rentals", "phrase": "on vacation rentals" },
+    { "id": "rideshare_transit", "label": "Rideshare, transit and parking", "phrase": "on rideshare and transit" },
+    { "id": "rental_car", "label": "Rental cars", "phrase": "on rental cars" },
+    { "id": "wholesale_club", "label": "Wholesale clubs", "phrase": "at wholesale clubs" },
+    { "id": "general", "label": "Everything else", "phrase": "on everything else" }
+  ]
+}

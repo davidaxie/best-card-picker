@@ -1,6 +1,7 @@
 import Foundation
 
-/// Canonical categories from PRD.md.
+/// The 18 canonical categories. Labels and reason phrases come from the
+/// bundled copy of data/categories.json so both apps show the same words.
 public enum Categories {
     public static let all: [String] = [
         "restaurant", "us_supermarket", "online_grocery", "gas_ev", "streaming", "drugstore",
@@ -9,101 +10,112 @@ public enum Categories {
         "rental_car", "wholesale_club", "general",
     ]
 
-    /// A rule for a parent category also covers these children unless a more
-    /// specific rule exists.
-    public static let parent: [String: String] = [
-        "airline_united": "airline_direct",
-        "airline_aa": "airline_direct",
-    ]
+    struct Entry: Decodable { var id: String; var label: String; var phrase: String }
+    struct File: Decodable { var categories: [Entry] }
 
-    /// Most specific first: the category itself, then its parents.
-    public static func lookupChain(_ category: String) -> [String] {
-        var chain = [category]
-        var current = category
-        while let p = parent[current] {
-            chain.append(p)
-            current = p
-        }
-        return chain
-    }
+    static let entries: [String: Entry] = {
+        guard let url = BundledData.categoriesURL,
+              let data = try? Data(contentsOf: url),
+              let file = try? JSONDecoder().decode(File.self, from: data) else { return [:] }
+        return Dictionary(file.categories.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+    }()
 
-    public static let labels: [String: String] = [
-        "restaurant": "Restaurant",
-        "us_supermarket": "Supermarket",
-        "online_grocery": "Online grocery",
-        "gas_ev": "Gas / EV",
-        "streaming": "Streaming",
-        "drugstore": "Drugstore",
-        "us_online_retail": "Online retail",
-        "airline_united": "United",
-        "airline_aa": "American Airlines",
-        "airline_direct": "Airline",
-        "hotel_direct": "Hotel",
-        "chase_travel": "Chase Travel",
-        "amex_travel_prepaid_hotel": "Amex Travel hotel",
-        "vacation_rental": "Vacation rental",
-        "rideshare_transit": "Rideshare / transit",
-        "rental_car": "Rental car",
-        "wholesale_club": "Warehouse club",
-        "general": "Everything else",
-    ]
-
-    public static func label(_ category: String) -> String { labels[category] ?? category }
+    /// "Restaurants and food delivery"
+    public static func label(_ category: String) -> String { entries[category]?.label ?? category }
+    /// "at restaurants"
+    public static func phrase(_ category: String) -> String { entries[category]?.phrase ?? "on \(category)" }
 }
 
-/// The shared card rules engine: a Swift port of src/engine (TypeScript).
-/// Pure functions over a `CardsFile`; both ports pass data/golden_tests.json.
+/// The shared card rules engine: a Swift port of src/engine/recommend.ts and
+/// merchant.ts, following docs/ENGINE_SPEC.md. Both ports pass
+/// data/golden_tests.json.
 public struct Engine: Sendable {
     public let file: CardsFile
-    /// Merchants from cards.json first (user-editable), then data/merchants.json.
-    public let merchants: [Merchant]
+    /// The two merchant lists in search order: cards.json, then merchants.json.
+    public let merchantLists: [[Merchant]]
 
     public init(file: CardsFile, extraMerchants: [Merchant] = []) {
         self.file = file
-        self.merchants = (file.merchants ?? []) + extraMerchants
+        self.merchantLists = [file.merchants ?? [], extraMerchants]
     }
 
-    // MARK: Merchant lookup
+    // MARK: Merchant resolution (spec "Merchant resolution")
 
-    /// Merchant whose `match` appears in the merchant string as whole words
-    /// after normalizing both: "smile.amazon.com" matches "amazon.com",
-    /// "Trader Joe's #123" matches "trader joes", "H-E-B" matches "h e b".
-    /// The longest match wins ("costco gasoline" beats "costco"); on equal
-    /// length the earlier entry wins.
-    public func merchant(for name: String?) -> Merchant? {
-        guard let name else { return nil }
-        let hay = " " + Self.normalize(name) + " "
-        guard hay.count > 2 else { return nil }
+    public enum MerchantKey: Equatable, Sendable {
+        case host(String)
+        case name(String)
+    }
+
+    /// Step 1: decide whether the string is a host or a place name.
+    public static func merchantKey(_ raw: String) -> MerchantKey {
+        var s = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if let r = s.range(of: "://") { s = String(s[r.upperBound...]) }
+        if let cut = s.firstIndex(where: { $0 == "/" || $0 == "?" || $0 == "#" }) { s = String(s[..<cut]) }
+        if let colon = s.lastIndex(of: ":"), s[s.index(after: colon)...].allSatisfy(\.isNumber) {
+            s = String(s[..<colon])
+        }
+        if s.hasSuffix(".") { s.removeLast() }
+        if s.contains("."), !s.contains(where: { $0.isWhitespace }) { return .host(s) }
+        return .name(raw)
+    }
+
+    public func merchant(for raw: String?) -> Merchant? {
+        guard let raw else { return nil }
+        switch Self.merchantKey(raw) {
+        case .host(let host): return lookupHost(host)
+        case .name(let name): return lookupName(name)
+        }
+    }
+
+    /// Step 2: longest suffix first, down to the last two labels.
+    func lookupHost(_ host: String) -> Merchant? {
+        let labels = host.split(separator: ".", omittingEmptySubsequences: false).map(String.init)
+        guard labels.count >= 2 else { return nil }
+        for i in 0...(labels.count - 2) {
+            let suffix = labels[i...].joined(separator: ".")
+            for list in merchantLists {
+                if let hit = list.first(where: { $0.match.contains(".") && $0.match.lowercased() == suffix }) {
+                    return hit
+                }
+            }
+        }
+        return nil
+    }
+
+    /// Step 3: brands (no dot) match when the name equals the brand or starts
+    /// with brand + " ". Longest brand wins; ties go to the earlier entry.
+    func lookupName(_ raw: String) -> Merchant? {
+        let name = Self.normalize(raw)
+        guard !name.isEmpty else { return nil }
         var best: Merchant?
         var bestLength = 0
-        for m in merchants {
-            let match = Self.normalize(m.match)
-            if !match.isEmpty, match.count > bestLength, hay.contains(" " + match + " ") {
-                best = m
-                bestLength = match.count
+        for list in merchantLists {
+            for m in list where !m.match.contains(".") {
+                let brand = Self.normalize(m.match)
+                guard !brand.isEmpty, brand.count > bestLength else { continue }
+                if name == brand || name.hasPrefix(brand + " ") {
+                    best = m
+                    bestLength = brand.count
+                }
             }
         }
         return best
     }
 
-    /// Lowercase, strip accents and apostrophes, turn every other
-    /// non-alphanumeric character into a space, collapse spaces.
+    /// Lowercase; delete ' and U+2019; each run of characters outside
+    /// [a-z0-9] becomes one space; trim.
     public static func normalize(_ s: String) -> String {
-        let folded = s.lowercased()
-            .folding(options: [.diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
         var out = ""
-        var lastWasSpace = true
-        for ch in folded {
-            if ch == "'" || ch == "\u{2019}" { continue }
-            if ch.isASCII && (ch.isLetter || ch.isNumber) {
+        var pendingSpace = false
+        for ch in s.lowercased() where ch != "'" && ch != "\u{2019}" {
+            if let a = ch.asciiValue, (a >= 97 && a <= 122) || (a >= 48 && a <= 57) {
+                if pendingSpace && !out.isEmpty { out.append(" ") }
+                pendingSpace = false
                 out.append(ch)
-                lastWasSpace = false
-            } else if !lastWasSpace {
-                out.append(" ")
-                lastWasSpace = true
+            } else {
+                pendingSpace = true
             }
         }
-        if out.hasSuffix(" ") { out.removeLast() }
         return out
     }
 
@@ -111,66 +123,66 @@ public struct Engine: Sendable {
 
     public func isForeign(_ ctx: PurchaseContext) -> Bool {
         if ctx.foreign == true { return true }
-        if let c = ctx.currency, !c.isEmpty, c.uppercased() != "USD" { return true }
-        if let c = ctx.country, !c.isEmpty, c.uppercased() != "US" { return true }
+        if let c = ctx.currency, c.uppercased() != "USD" { return true }
+        if let c = ctx.country, c.uppercased() != "US" { return true }
         return false
-    }
-
-    public func category(for ctx: PurchaseContext) -> String {
-        ctx.category ?? merchant(for: ctx.merchant)?.category ?? "general"
     }
 
     func pointValues(_ options: EngineOptions) -> [String: Double] {
         file.pointValuesCents.merging(options.pointValuesCents ?? [:]) { _, new in new }
     }
 
-    // MARK: Scoring
+    // MARK: Scoring (spec "Scoring")
 
-    /// Matches JavaScript's Math.round(x * 10000) / 10000.
+    /// sign(x) * roundHalfAwayFromZero(|x| * 10000) / 10000, with -0 as 0.
     public static func round4(_ x: Double) -> Double {
-        (x * 10000 + 0.5).rounded(.down) / 10000
+        let r = (abs(x) * 10000).rounded(.toNearestOrAwayFromZero) / 10000
+        let signed = x < 0 ? -r : r
+        return signed == 0 ? 0 : signed
     }
 
-    public static func capEntry(_ options: EngineOptions, cardId: String, category: String) -> CapEntry? {
+    static func capEntry(_ options: EngineOptions, cardId: String, category: String) -> CapEntry? {
         options.capState?[cardId]?[category]
     }
 
-    static func capReached(_ entry: CapEntry?, rule: Rule) -> Bool {
-        guard let entry else { return false }
+    static func capReached(_ options: EngineOptions, card: Card, rule: Rule) -> Bool {
+        guard let entry = capEntry(options, cardId: card.id, category: rule.category) else { return false }
         if entry.reached == true { return true }
         if let used = entry.usedUsd, let cap = rule.capUsdPerYear, used >= cap { return true }
         return false
     }
 
-    public func score(card: Card, category: String, foreign: Bool, options: EngineOptions) -> CardScore {
-        var applied: Rule?
-        for cat in Categories.lookupChain(category) {
-            let candidates = card.rules.filter { $0.category == cat && !(foreign && $0.usOnly == true) }
-            if let best = candidates.max(by: { $0.rate < $1.rate }) {
-                applied = best
-                break
-            }
+    /// Highest rate wins; the first one on equal rate.
+    static func highest(_ rules: [Rule]) -> Rule? {
+        var best: Rule?
+        for r in rules where best == nil || r.rate > best!.rate { best = r }
+        return best
+    }
+
+    public func score(card: Card, category: String, foreign: Bool, options: EngineOptions, pointValues: [String: Double]) -> CardScore {
+        let eligible = card.rules.filter { rule in
+            !(rule.usOnly == true && foreign) && !Self.capReached(options, card: card, rule: rule)
         }
-        if let rule = applied, Self.capReached(Self.capEntry(options, cardId: card.id, category: rule.category), rule: rule) {
-            applied = nil
+        var applied = Self.highest(eligible.filter { $0.category == category })
+        if applied == nil, category == "airline_united" || category == "airline_aa" {
+            applied = Self.highest(eligible.filter { $0.category == "airline_direct" })
         }
-        let rate = applied?.rate ?? card.baseRate
-        let pv = pointValues(options)[card.currency] ?? 0
-        let cents = Self.round4(rate * pv - (foreign ? card.foreignFeePct : 0))
+        let rate = applied.map { max($0.rate, card.baseRate) } ?? card.baseRate
+        let cents = Self.round4(rate * (pointValues[card.currency] ?? 0) - (foreign ? card.foreignFeePct : 0))
         let perk = card.preferredFor?.first { $0.category == category }
-        let basis: Basis = perk != nil ? .perk : (applied != nil ? .bonus : .base)
+        let basis: Basis
+        if perk != nil { basis = .perk }
+        else if let applied, applied.rate > card.baseRate { basis = .bonus }
+        else { basis = .base }
         return CardScore(cardId: card.id, rate: rate, centsPerDollar: cents, basis: basis, appliedRule: applied, perkReason: perk?.reason)
     }
 
-    /// Cards left after enabled/disabled and network acceptance filters.
-    public func eligibleCards(_ ctx: PurchaseContext, merchant: Merchant?, options: EngineOptions) -> [Card] {
-        let disabled = Set(options.disabledCards ?? [])
-        let accepted: [String]? = ctx.acceptedNetworks
-            ?? (ctx.channel == .inStore ? merchant?.inStoreNetworks : merchant?.onlineNetworks)
-        let acceptedSet = accepted.map { Set($0.map { $0.lowercased() }) }
-        return file.cards.filter { card in
-            card.isEnabled && !disabled.contains(card.id)
-                && (acceptedSet?.contains(card.network.lowercased()) ?? true)
+    static func networkRank(_ network: String) -> Int {
+        switch network.lowercased() {
+        case "visa", "mastercard": return 0
+        case "discover": return 1
+        case "amex": return 2
+        default: return 3
         }
     }
 
@@ -178,49 +190,63 @@ public struct Engine: Sendable {
         let merchant = merchant(for: ctx.merchant)
         let category = ctx.category ?? merchant?.category ?? "general"
         let foreign = isForeign(ctx)
-        let cards = eligibleCards(ctx, merchant: merchant, options: options)
+        let accepted: Set<String>? = (ctx.acceptedNetworks
+            ?? (ctx.channel == .inStore ? merchant?.inStoreNetworks : merchant?.onlineNetworks))
+            .map { Set($0.map { $0.lowercased() }) }
+        let disabled = Set(options.disabledCards ?? [])
+        let indexed = file.cards.enumerated().filter { _, card in
+            card.isEnabled && !disabled.contains(card.id) && (accepted?.contains(card.network.lowercased()) ?? true)
+        }
+        let candidates = indexed.map(\.element)
 
-        guard !cards.isEmpty else {
-            return Recommendation(
-                cardId: nil, rate: nil, centsPerDollar: nil, basis: nil,
-                category: category, foreign: foreign,
-                reason: "None of your cards is accepted here.",
-                runnerUp: nil,
-                warnings: [EngineWarning(code: .noAcceptedCard, message: "None of your cards is accepted here.")],
-                merchant: merchant, ranked: [])
+        var warnings: [EngineWarning] = []
+        let feeCards = candidates.filter { $0.foreignFeePct > 0 }
+        if foreign, !feeCards.isEmpty {
+            warnings.append(EngineWarning(code: .foreignFees, message: "Foreign purchase: \(feeCards.map(\.name).joined(separator: ", ")) charge foreign fees."))
         }
 
-        let byId = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0) })
-        let order = Dictionary(uniqueKeysWithValues: file.cards.enumerated().map { ($1.id, $0) })
+        guard !candidates.isEmpty else {
+            warnings.append(EngineWarning(code: .noAcceptedCard, message: "None of your cards is accepted here."))
+            return Recommendation(cardId: nil, rate: nil, centsPerDollar: nil, basis: nil, category: category, foreign: foreign,
+                                  reason: "None of your cards is accepted here.", runnerUp: nil, warnings: warnings,
+                                  merchant: merchant, ranked: [])
+        }
+
+        let pv = pointValues(options)
         let preferCash = options.preferCashOnTie ?? true
-        let ranked = cards
-            .map { score(card: $0, category: category, foreign: foreign, options: options) }
+        let byId = Dictionary(uniqueKeysWithValues: candidates.map { ($0.id, $0) })
+        let indexOf = Dictionary(uniqueKeysWithValues: indexed.map { ($0.element.id, $0.offset) })
+        let ranked = candidates
+            .map { score(card: $0, category: category, foreign: foreign, options: options, pointValues: pv) }
             .sorted { a, b in
-                Self.isBetter(a, b, cards: byId, preferCash: preferCash, order: order)
+                let aPerk = a.basis == .perk, bPerk = b.basis == .perk
+                if aPerk != bPerk { return aPerk }
+                if a.centsPerDollar != b.centsPerDollar { return a.centsPerDollar > b.centsPerDollar }
+                let ca = byId[a.cardId]!, cb = byId[b.cardId]!
+                let aCash = ca.currency == "cash", bCash = cb.currency == "cash"
+                if aCash != bCash { return preferCash ? aCash : bCash }
+                let ra = Self.networkRank(ca.network), rb = Self.networkRank(cb.network)
+                if ra != rb { return ra < rb }
+                return indexOf[a.cardId]! < indexOf[b.cardId]!
             }
 
         let best = ranked[0]
-        let bestCard = byId[best.cardId]!
+        let card = byId[best.cardId]!
         let runner = ranked.count > 1 ? ranked[1] : nil
 
-        var warnings: [EngineWarning] = []
-        if foreign, cards.contains(where: { $0.foreignFeePct > 0 }) {
-            let names = cards.filter { $0.foreignFeePct > 0 }.map(\.name).joined(separator: ", ")
-            warnings.append(EngineWarning(code: .foreignFees, message: "Foreign purchase: foreign fees apply on \(names)."))
-        }
-        if (ctx.mayNotTakeAmex == true || merchant?.mayNotTakeAmex == true), bestCard.network.lowercased() == "amex" {
-            warnings.append(EngineWarning(code: .mayNotTakeAmex, message: "This merchant may not take Amex. Have a backup card ready."))
+        if ctx.mayNotTakeAmex == true || merchant?.mayNotTakeAmex == true, card.network.lowercased() == "amex" {
+            warnings.append(EngineWarning(code: .mayNotTakeAmex, message: "This merchant may not take Amex. Have \(runner.flatMap { byId[$0.cardId]?.name } ?? "a backup card") ready."))
         }
         if let rule = best.appliedRule, let cap = rule.capUsdPerYear,
-           let used = Self.capEntry(options, cardId: best.cardId, category: rule.category)?.usedUsd,
-           used >= 0.9 * cap {
-            warnings.append(EngineWarning(code: .capNearLimit, message: "\(bestCard.name) \(Categories.label(rule.category).lowercased()) cap is nearly used ($\(Self.formatNumber(used)) of $\(Self.formatNumber(cap)))."))
+           let used = Self.capEntry(options, cardId: card.id, category: rule.category)?.usedUsd,
+           used >= 0.9 * cap, used < cap {
+            warnings.append(EngineWarning(code: .capNearLimit, message: "\(card.name) is near its $\(Self.formatNumber(cap)) yearly cap \(Categories.phrase(rule.category))."))
         }
         if best.appliedRule?.verify == true {
-            warnings.append(EngineWarning(code: .verifyRule, message: "Check this rate against the issuer's terms."))
+            warnings.append(EngineWarning(code: .verifyRule, message: "Check this rate against \(card.name)'s current terms."))
         }
-        if Self.relevantVerifyFields(bestCard, basis: best.basis, foreign: foreign).isEmpty == false {
-            warnings.append(EngineWarning(code: .verifyCard, message: "Some of \(bestCard.name)'s terms are marked verify."))
+        if foreign, card.verify?.contains("foreignFeePct") == true {
+            warnings.append(EngineWarning(code: .verifyCard, message: "Confirm \(card.name)'s foreign transaction fee."))
         }
         if merchant?.verify == true {
             warnings.append(EngineWarning(code: .verifyMerchant, message: "This merchant's category is a best guess; the bank may code it differently."))
@@ -229,40 +255,14 @@ public struct Engine: Sendable {
         return Recommendation(
             cardId: best.cardId, rate: best.rate, centsPerDollar: best.centsPerDollar, basis: best.basis,
             category: category, foreign: foreign,
-            reason: reason(for: best, card: bestCard, category: category),
+            reason: reason(for: best, card: card, category: category, foreign: foreign),
             runnerUp: runner.map { RunnerUp(cardId: $0.cardId, centsPerDollar: $0.centsPerDollar) },
             warnings: warnings, merchant: merchant, ranked: ranked)
     }
 
-    /// A card's `verify` fields that matter for this purchase.
-    static func relevantVerifyFields(_ card: Card, basis: Basis, foreign: Bool) -> [String] {
-        (card.verify ?? []).filter { field in
-            switch field {
-            case "foreignFeePct": return foreign
-            case "baseRate": return basis == .base
-            case "rules": return basis == .bonus
-            case "preferredFor": return basis == .perk
-            default: return true
-            }
-        }
-    }
+    // MARK: Text (spec "Reason text", not compared by golden tests)
 
-    static func isBetter(_ a: CardScore, _ b: CardScore, cards: [String: Card], preferCash: Bool, order: [String: Int]) -> Bool {
-        // 5. Perk preference ranks first even if another card earns more.
-        let aPerk = a.basis == .perk, bPerk = b.basis == .perk
-        if aPerk != bPerk { return aPerk }
-        if a.centsPerDollar != b.centsPerDollar { return a.centsPerDollar > b.centsPerDollar }
-        // 6. Ties: cash back first (unless flipped), then Visa/Mastercard over Amex, then file order.
-        let ca = cards[a.cardId]!, cb = cards[b.cardId]!
-        let aCash = ca.currency == "cash", bCash = cb.currency == "cash"
-        if aCash != bCash { return preferCash ? aCash : bCash }
-        let aAmex = ca.network.lowercased() == "amex", bAmex = cb.network.lowercased() == "amex"
-        if aAmex != bAmex { return !aAmex }
-        return (order[a.cardId] ?? .max) < (order[b.cardId] ?? .max)
-    }
-
-    // MARK: Text
-
+    /// Up to 4 decimals, trailing zeros dropped: 4, 1.5, 3.6.
     public static func formatNumber(_ x: Double) -> String {
         let r = round4(x)
         if r == r.rounded() { return String(Int(r)) }
@@ -271,21 +271,33 @@ public struct Engine: Sendable {
         return s
     }
 
+    /// One decimal, ".0" dropped: "8", "3.6".
+    public static func formatCentsShort(_ cents: Double) -> String {
+        let r = (cents * 10).rounded(.toNearestOrAwayFromZero) / 10
+        return r == r.rounded() ? String(Int(r)) : String(format: "%.1f", r)
+    }
+
     /// "4x" for points cards, "3%" for cash back.
     public static func formatRate(_ rate: Double, currency: String) -> String {
         currency == "cash" ? "\(formatNumber(rate))%" : "\(formatNumber(rate))x"
     }
 
-    /// One decimal: "8.0".
+    /// One decimal always: "8.0".
     public static func formatCents(_ cents: Double) -> String {
         String(format: "%.1f", cents)
     }
 
-    public func reason(for score: CardScore, card: Card, category: String) -> String {
+    public func reason(for score: CardScore, card: Card, category: String, foreign: Bool) -> String {
         let rate = Self.formatRate(score.rate, currency: card.currency)
-        let target = score.appliedRule.map { Categories.label($0.category).lowercased() } ?? "everything"
-        let value = "\(rate) on \(target), about \(Self.formatCents(score.centsPerDollar)) cents per dollar"
-        if let perk = score.perkReason { return "Best for the perk: \(perk). \(value)" }
-        return value
+        let fee = foreign && card.foreignFeePct > 0 ? " after the \(Self.formatNumber(card.foreignFeePct))% foreign fee" : ""
+        let value = "about \(Self.formatCentsShort(score.centsPerDollar)) cents per dollar\(fee)"
+        if let perk = score.perkReason {
+            return "Perk pick: \(perk) (\(rate), \(value))"
+        }
+        let cashBack = card.currency == "cash" ? " cash back" : ""
+        if score.basis == .bonus {
+            return "\(rate)\(cashBack) \(Categories.phrase(category)), \(value)"
+        }
+        return "\(rate)\(cashBack) on everything else, \(value)"
     }
 }
