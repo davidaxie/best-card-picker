@@ -74,7 +74,9 @@ Note: ineligible rules are dropped before the fallback, so a reached cap on a sp
 { cardId, rate, centsPerDollar, basis, category, foreign, reason, runnerUp: { cardId, centsPerDollar } | null, warnings: [{ code, message }], merchant, ranked }
 ```
 
-With no candidates: cardId, rate, centsPerDollar, basis and runnerUp are null and the only warnings are `foreign_fees` (if it applies) and `no_accepted_card`.
+With no candidates: cardId, rate, centsPerDollar, basis and runnerUp are null and the only warning is `no_accepted_card` (`foreign_fees` needs at least one candidate, so it cannot fire here).
+
+Known consequence of PRD step 3 (fees are subtracted, fee cards are not excluded): on a foreign drugstore purchase Freedom Unlimited nets 3x UR (6.0) minus its 3% fee = 3.0 cents and still beats the no-fee cards at 2.0. Every other category picks a no-fee card abroad. This is an open question for David; changing it is an engine rule change plus new golden cases.
 
 **Warnings** (codes are compared in golden tests as a set; messages are free text):
 
