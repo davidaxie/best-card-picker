@@ -1,0 +1,24 @@
+{
+  "name": "best-card-picker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Private, local-only best credit card picker: shared engine + Chrome extension.",
+  "scripts": {
+    "build": "tsc --noEmit && vite build && node scripts/build-content.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npm run build && playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^26.6.6",
+    "ajv": "^8.20.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^4.1.12"
+  }
+}
