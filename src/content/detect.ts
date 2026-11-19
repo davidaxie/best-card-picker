@@ -19,7 +19,7 @@ export interface CheckoutScan {
 
 export const CHECKOUT_THRESHOLD = 4;
 
-const PATH_RE = /(^|[/_.\-=?&#])(checkout|cart|basket|payment|payments|billing|order|place-order|placeorder)([/_.\-=?&#]|$)/i;
+const PATH_RE = /(^|[/_.\-=?&#])(checkout|cart|basket|payment|payments|pay|billing|order|place-order|placeorder|purchase|buy|spc)([/_.\-=?&#]|$)/i;
 
 const CC_SELECTOR = [
   'cc-number',

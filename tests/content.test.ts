@@ -113,3 +113,14 @@ describe('pill placement', () => {
     expect(['br', 'tr', 'bl', 'tl']).toContain(chooseCorner(340, 90, everywhere));
   });
 });
+
+describe('real-world checkout URLs', () => {
+  it('path signal covers common checkout paths but not product pages alone', async () => {
+    const { scanCheckout: scan } = await import('../src/content/detect');
+    const empty = new DOMParser().parseFromString('<html><body><button>Place your order</button></body></html>', 'text/html');
+    expect(scan(empty, 'https://www.amazon.com/gp/buy/spc/handlers/display.html?hasWorkingJavascript=1').isCheckout).toBe(true);
+    expect(scan(empty, 'https://www.example.com/checkout/').isCheckout).toBe(true);
+    const product = new DOMParser().parseFromString('<html><body><button>Add to bag</button></body></html>', 'text/html');
+    expect(scan(product, 'https://www.apple.com/shop/buy-iphone/iphone-17').isCheckout).toBe(false);
+  });
+});
