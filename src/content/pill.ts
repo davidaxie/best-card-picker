@@ -83,7 +83,7 @@ const CSS = `
 .detail { color: #444; margin-top: 2px; }
 .warn { color: #8a4b00; margin-top: 4px; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
-button { all: unset; cursor: pointer; font: 12px/1 inherit; padding: 6px 10px; border-radius: 999px; background: #f1f1f1; color: #111; }
+button { all: unset; cursor: pointer; font-size: 12px; line-height: 1; padding: 6px 10px; border-radius: 999px; background: #f1f1f1; color: #111; }
 button:hover { background: #e4e4e4; }
 button:focus-visible { outline: 2px solid #1a4c8b; }
 @media (prefers-color-scheme: dark) {

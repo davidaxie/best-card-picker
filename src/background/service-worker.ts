@@ -103,6 +103,9 @@ async function popupData(tabId: number): Promise<PopupData> {
     await rescan(tabId);
   }
   const page: PageInfo = e.page && e.page.url === url ? e.page : { url, title: tab?.title ?? null };
+  // The popup always recomputes: it is often answering a change the user just made, and
+  // storage.onChanged (which clears the cache) may not have fired yet.
+  e.decision = undefined;
   const d = decisionFor(state, tabId, page);
   await setBadge(tabId, state, d);
   return {
@@ -276,5 +279,6 @@ chrome.runtime.onStartup.addListener(() => void syncContentScripts().catch(() =>
 // Test hook (no network, no data): lets the Playwright suite read pill state through the extension.
 (globalThis as unknown as { bcpTest: unknown }).bcpTest = {
   pillState: (tabId: number) => chrome.tabs.sendMessage(tabId, { type: 'pillState' }),
+  lastPages: () => [...tabs.values()].map((e) => e.page ?? null),
   syncContentScripts,
 };

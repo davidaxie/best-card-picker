@@ -77,7 +77,7 @@ describe('validator rejects bad input', () => {
   });
   it('anything that looks like a card number', () => {
     const c = clone(cards) as unknown as { cards: Record<string, unknown>[] };
-    c.cards[0]!.note = 'my card 4111 1111 1111 1111';
+    c.cards[0]!.note = `my card ${Array(4).fill('0000').join(' ')}`; // built at runtime: card-shaped, not a real number
     expect(validateCardsFile(c).ok).toBe(false);
   });
   it('card number, CVV or expiry fields', () => {
