@@ -13,14 +13,17 @@ actor PlaceMonitor {
     static let shared = PlaceMonitor()
     static let monitorName = "BestCardPickerSavedPlaces"
 
-    private var monitor: CLMonitor?
+    /// Created once. CoreLocation allows only one CLMonitor per name, and
+    /// `get()` can be re-entered while the init is suspended, so callers share
+    /// one creation task instead of each creating a monitor.
+    private var creation: Task<CLMonitor, Never>?
     private var listening = false
 
     private func get() async -> CLMonitor {
-        if let monitor { return monitor }
-        let m = await CLMonitor(Self.monitorName)
-        monitor = m
-        return m
+        if let creation { return await creation.value }
+        let task = Task { await CLMonitor(Self.monitorName) }
+        creation = task
+        return await task.value
     }
 
     func start() async {
