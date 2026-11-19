@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "updated": "2026-11-18",
+  "pointValuesCents": {
+    "amex_mr": 2.0,
+    "chase_ur": 2.0,
+    "united_miles": 1.2,
+    "aa_miles": 1.45,
+    "cash": 1.0
+  },
+  "cards": [
+    {
+      "id": "amex-gold",
+      "name": "Amex Gold",
+      "shortCode": "GOLD",
+      "color": "#B8860B",
+      "network": "amex",
+      "currency": "amex_mr",
+      "foreignFeePct": 0,
+      "baseRate": 1,
+      "rules": [
+        { "category": "restaurant", "rate": 4, "capUsdPerYear": 50000 },
+        { "category": "us_supermarket", "rate": 4, "capUsdPerYear": 25000, "usOnly": true },
+        { "category": "airline_direct", "rate": 3, "verify": true, "note": "PRD marks 3x on flights booked directly with airlines as verify." },
+        { "category": "amex_travel_prepaid_hotel", "rate": 5, "verify": true, "note": "Some issuer pages show a lower rate for prepaid hotels on AmexTravel.com; confirm before relying on 5x." }
+      ]
+    },
+    {
+      "id": "chase-sapphire-preferred",
+      "name": "Chase Sapphire Preferred",
+      "shortCode": "CSP",
+      "color": "#1A4C8B",
+      "network": "visa",
+      "currency": "chase_ur",
+      "foreignFeePct": 0,
+      "baseRate": 1,
+      "preferredFor": [
+        { "category": "chase_travel", "reason": "uses the $100 Chase Travel hotel credit" }
+      ],
+      "rules": [
+        { "category": "chase_travel", "rate": 5 },
+        { "category": "restaurant", "rate": 3 },
+        { "category": "online_grocery", "rate": 3 },
+        { "category": "gas_ev", "rate": 3 },
+        { "category": "streaming", "rate": 3 },
+        { "category": "vacation_rental", "rate": 3 },
+        { "category": "hotel_direct", "rate": 2 },
+        { "category": "airline_direct", "rate": 2 },
+        { "category": "rideshare_transit", "rate": 2 },
+        { "category": "rental_car", "rate": 2 }
+      ]
+    },
+    {
+      "id": "chase-freedom-unlimited",
+      "name": "Chase Freedom Unlimited",
+      "shortCode": "FU",
+      "color": "#2E7D9A",
+      "network": "visa",
+      "currency": "chase_ur",
+      "foreignFeePct": 3,
+      "baseRate": 1.5,
+      "rules": [
+        { "category": "chase_travel", "rate": 5 },
+        { "category": "restaurant", "rate": 3 },
+        { "category": "drugstore", "rate": 3 }
+      ]
+    },
+    {
+      "id": "united-explorer",
+      "name": "United Explorer",
+      "shortCode": "UA",
+      "color": "#0033A0",
+      "network": "visa",
+      "currency": "united_miles",
+      "foreignFeePct": 0,
+      "baseRate": 1,
+      "preferredFor": [
+        { "category": "airline_united", "reason": "free first checked bag and priority boarding on United" }
+      ],
+      "rules": [
+        { "category": "airline_united", "rate": 3 },
+        { "category": "restaurant", "rate": 2 },
+        { "category": "hotel_direct", "rate": 2 }
+      ]
+    },
+    {
+      "id": "citi-aa-platinum",
+      "name": "Citi AAdvantage Platinum Select",
+      "shortCode": "AA",
+      "color": "#C8102E",
+      "network": "mastercard",
+      "currency": "aa_miles",
+      "foreignFeePct": 0,
+      "baseRate": 1,
+      "verify": ["foreignFeePct"],
+      "note": "Fee rises to $150 and earning rates change on 2027-01-24. Update this card then.",
+      "preferredFor": [
+        { "category": "airline_aa", "reason": "free first checked bag and boarding perks on American" }
+      ],
+      "rules": [
+        { "category": "airline_aa", "rate": 2 },
+        { "category": "restaurant", "rate": 2 },
+        { "category": "gas_ev", "rate": 2 }
+      ]
+    },
+    {
+      "id": "amex-blue-cash-everyday",
+      "name": "Amex Blue Cash Everyday",
+      "shortCode": "BCE",
+      "color": "#3A7BD5",
+      "network": "amex",
+      "currency": "cash",
+      "foreignFeePct": 2.7,
+      "baseRate": 1,
+      "rules": [
+        { "category": "us_supermarket", "rate": 3, "capUsdPerYear": 6000, "usOnly": true },
+        { "category": "us_online_retail", "rate": 3, "capUsdPerYear": 6000, "usOnly": true },
+        { "category": "gas_ev", "rate": 3, "capUsdPerYear": 6000, "usOnly": true }
+      ]
+    }
+  ],
+  "merchants": [
+    { "match": "costco", "name": "Costco", "category": "wholesale_club", "inStoreNetworks": ["visa"] },
+    { "match": "costco gasoline", "name": "Costco Gas", "category": "gas_ev", "inStoreNetworks": ["visa"] },
+    { "match": "costco.com", "name": "Costco", "category": "wholesale_club", "onlineNetworks": ["visa", "mastercard", "discover"], "verify": true, "note": "costco.com is believed not to take Amex; confirm." },
+    { "match": "united.com", "name": "United Airlines", "category": "airline_united" }
+  ]
+}
