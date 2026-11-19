@@ -12,7 +12,13 @@ struct BestCardPickerApp: App {
     init() {
         // CLMonitor delivers saved place events to whichever launch is running,
         // including a background relaunch, so start listening right away.
-        Task { await PlaceMonitor.shared.start() }
+        // A background relaunch may never build the UI, so sync here too (this
+        // also takes the Always service session that keeps fences armed).
+        let d = AppModel.shared.data
+        Task {
+            await PlaceMonitor.shared.start()
+            await PlaceMonitor.shared.sync(places: d.savedPlaces, enabled: d.savedPlaceAlerts)
+        }
     }
 
     var body: some Scene {

@@ -18,6 +18,11 @@ actor PlaceMonitor {
     /// one creation task instead of each creating a monitor.
     private var creation: Task<CLMonitor, Never>?
     private var listening = false
+    /// iOS 18 and later: CLMonitor's implicit service session only covers
+    /// "While Using", so locationd drops the fences when the app goes to the
+    /// background. Holding an explicit Always session while alerts are on
+    /// keeps them armed. (iOS 17 has no service sessions and needs none.)
+    private var alwaysSession: AnyObject?
 
     private func get() async -> CLMonitor {
         if let creation { return await creation.value }
@@ -56,7 +61,18 @@ actor PlaceMonitor {
                 radius: SavedPlace.radiusMeters)
             await m.add(condition, identifier: place.id.uuidString, assuming: .unsatisfied)
         }
+        holdAlwaysSession(enabled && !wanted.isEmpty)
         if enabled { await start() }
+    }
+
+    private func holdAlwaysSession(_ hold: Bool) {
+        guard #available(iOS 18.0, *) else { return }
+        if hold {
+            if alwaysSession == nil { alwaysSession = CLServiceSession(authorization: .always) }
+        } else if let session = alwaysSession as? CLServiceSession {
+            session.invalidate()
+            alwaysSession = nil
+        }
     }
 
     func monitoredIdentifiers() async -> [String] {
