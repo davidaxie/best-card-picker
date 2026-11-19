@@ -1,0 +1,3 @@
+// Copy to Local.xcconfig (gitignored) and fill in your Personal Team ID.
+// Find it in Xcode > Settings > Accounts, or in the Signing & Capabilities tab.
+DEVELOPMENT_TEAM = YOURTEAMID

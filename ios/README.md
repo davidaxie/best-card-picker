@@ -42,12 +42,14 @@ After the extension side changes `data/` or `src/engine`, run
 ## Install on your iPhone (free Apple ID)
 
 1. Open `ios/BestCardPicker.xcodeproj` in Xcode.
-2. For both the BestCardPicker and BestCardWidget targets, go to Signing &
-   Capabilities, pick your Personal Team, and keep the App Group
+2. Run `cp ios/Local.xcconfig.example ios/Local.xcconfig` and put your
+   Personal Team ID in it. `Local.xcconfig` is gitignored, so the ID never
+   reaches the public repo. Don't pick the team in Xcode's Signing tab: that
+   writes it into the committed project. Keep the App Group
    `group.com.davidxie.bestcardpicker`. If Xcode says the bundle ID is taken,
    change `com.davidxie.bestcardpicker` (app), `.widget` (widget) and the App
    Group in `project.yml` and both `.entitlements` files to something unique,
-   then run `xcodegen generate`. Don't commit your team ID.
+   then run `xcodegen generate`.
 3. Pick your iPhone and Run. With a free Apple ID the app stops launching after
    7 days; Run again to reinstall it.
 4. On the phone, go to Settings > General > VPN & Device Management and trust

@@ -107,6 +107,7 @@
 		E7B1BAA9CD005009DAF64E0F /* PlaceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceMonitor.swift; sourceTree = "<group>"; };
 		EB9FC8F1E261ADDA7DFBEB70 /* SavedPlacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlacesView.swift; sourceTree = "<group>"; };
 		FD55FFE03D574AC93BD49A05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		"TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +258,14 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
+		"TEMP_F549CEBC-87BD-4E58-8935-7D2DBC3731F4" /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				"TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -349,20 +358,16 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					0557121AE1BEE79E0B336C5C = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					200F3DC8FD1E15BF469C741C = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					9910E05548ED97D117CF949F = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 						TestTargetID = D59C4C5093F2EED06EFD2B8B;
 					};
 					D59C4C5093F2EED06EFD2B8B = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -515,6 +520,7 @@
 		};
 		4D9D3D145400C7C7FDB0F0AB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -550,7 +556,6 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -661,6 +666,7 @@
 		};
 		D70B9DE41292F8B0203B33DA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -696,7 +702,6 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;

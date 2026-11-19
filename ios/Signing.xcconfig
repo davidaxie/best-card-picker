@@ -1,0 +1,5 @@
+// Committed. Signing comes from Local.xcconfig, which is gitignored so your
+// Apple team ID never lands in the public repo. To sign for your iPhone:
+//   cp Local.xcconfig.example Local.xcconfig   (then set DEVELOPMENT_TEAM)
+// Simulator builds need neither.
+#include? "Local.xcconfig"

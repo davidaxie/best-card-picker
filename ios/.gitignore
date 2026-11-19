@@ -4,3 +4,6 @@ build/
 DerivedData/
 *.xcuserstate
 xcuserdata/
+Local.xcconfig
+*.mobileprovision
+*.provisionprofile
