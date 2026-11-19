@@ -18,3 +18,5 @@ select { flex: 1; font: inherit; padding: 4px 6px; border-radius: 6px; border: 1
 button.link { all: unset; color: var(--accent); cursor: pointer; font-size: 12px; }
 button.link:focus-visible { outline: 2px solid var(--accent); }
 .foot { display: flex; justify-content: space-between; margin-top: 12px; }
+.saved { background: var(--chip); border-radius: 6px; padding: 6px 8px; margin: 8px 0 0; }
+#point { display: inline-block; margin-top: 8px; }

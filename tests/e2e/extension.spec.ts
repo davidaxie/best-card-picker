@@ -24,6 +24,9 @@ const PAGES: Record<string, string> = {
   gbp: 'https://www.example-shop.co.uk/checkout',
   unknown: 'https://www.tiny-candle-shop.com/products/lavender',
   pizzeria: 'https://www.marios-pizzeria-test.com/order/checkout',
+  amazonSaved: 'https://www.amazon.com/checkout/p/p-106-0000001/pay',
+  targetSaved: 'https://www.target.com/checkout',
+  doordashSaved: 'https://www.doordash.com/consumer/checkout/payment/',
 };
 const FILES: Record<string, string> = {
   amazon: 'amazon-checkout.html',
@@ -36,6 +39,9 @@ const FILES: Record<string, string> = {
   gbp: 'gbp-shop-checkout.html',
   unknown: 'unknown-shop.html',
   pizzeria: 'pizzeria-checkout.html',
+  amazonSaved: 'amazon-saved-cards.html',
+  targetSaved: 'target-saved-cards.html',
+  doordashSaved: 'doordash-saved-cards.html',
 };
 const strip = (u: string) => {
   const x = new URL(u);
@@ -104,7 +110,10 @@ interface PillState {
   shown: boolean;
   count: number;
   corner: string | null;
-  pill: { cardName: string; rateText: string; runnerUpName: string | null; detail: string; warnings: string[] } | null;
+  pill: { cardName: string; rateText: string; runnerUpName: string | null; detail: string; warnings: string[]; last4: string | null; savedNote?: string | null } | null;
+  mode?: 'auto' | 'click';
+  saved?: string | null;
+  highlight?: { shown: boolean; label: string | null; count: number };
 }
 
 async function pillState(ext: Ext, tabId: number): Promise<PillState | null> {
@@ -421,6 +430,191 @@ test('page hints: a restaurant found only through schema.org gets Amex Gold and 
   expect(s.pill!.detail).toContain('Unknown store');
   const popup = await openPopup(ext, tabId);
   await expect(popup.locator('#ask')).toContainText('looks like restaurants');
+  assertNoExtensionNetwork(ext);
+  await ext.ctx.close();
+});
+
+// ---------------------------------------------------------------------------
+// Saved-card highlight. Fake digits only: Gold 0001, CSP 0002, FU 0003, UA 0004, AA 0005, BCE 0006.
+
+const FAKE_LAST4 = {
+  'amex-gold': '0001',
+  'chase-sapphire-preferred': '0002',
+  'chase-freedom-unlimited': '0003',
+  'united-explorer': '0004',
+  'citi-aa-platinum': '0005',
+  'amex-blue-cash-everyday': '0006',
+};
+
+async function setLast4(ext: Ext, map: Record<string, string>): Promise<void> {
+  await ext.sw.evaluate(async (m) => chrome.storage.local.set({ last4: m }), map);
+}
+
+/** Inputs, radio state, aria state, focus and every input/change/click event the page saw. */
+async function formSnapshot(page: Page): Promise<unknown> {
+  return page.evaluate(() => ({
+    checked: Array.from(document.querySelectorAll('input')).map((i) => `${i.id}:${i.checked}:${i.value}`),
+    aria: Array.from(document.querySelectorAll('[aria-checked],[aria-selected]')).map(
+      (e) => `${e.id}:${e.getAttribute('aria-checked')}:${e.getAttribute('aria-selected')}`,
+    ),
+    active: document.activeElement?.tagName ?? null,
+    events: (window as unknown as { __events: string[] }).__events,
+  }));
+}
+
+async function waitForHighlight(ext: Ext, tabId: number): Promise<PillState> {
+  await expect.poll(async () => (await pillState(ext, tabId))?.highlight?.shown ?? false, { timeout: 10_000 }).toBe(true);
+  return (await pillState(ext, tabId))!;
+}
+
+/** The overlay sits on the row: its box contains the row's box (plus a few pixels of padding). */
+async function expectOutlined(page: Page, rowSelector: string): Promise<void> {
+  const r = await page.evaluate((sel) => {
+    const host = document.querySelector('bcp-highlight-host')!.getBoundingClientRect();
+    const row = document.querySelector(sel)!.getBoundingClientRect();
+    return { host: { l: host.left, t: host.top, r: host.right, b: host.bottom }, row: { l: row.left, t: row.top, r: row.right, b: row.bottom } };
+  }, rowSelector);
+  expect(r.host.l).toBeLessThanOrEqual(r.row.l);
+  expect(r.host.t).toBeLessThanOrEqual(r.row.t);
+  expect(r.host.r).toBeGreaterThanOrEqual(r.row.r);
+  expect(r.host.b).toBeGreaterThanOrEqual(r.row.b);
+  expect(r.host.r - r.host.l - (r.row.r - r.row.l)).toBeLessThan(12);
+}
+
+test('saved cards: Auto mode outlines the best saved card and never touches the form', async () => {
+  const ext = await launch(newProfile());
+  await enableAutoMode(ext);
+  await setLast4(ext, FAKE_LAST4);
+
+  const cases = [
+    { key: 'amazonSaved', card: 'Amex Blue Cash Everyday', last4: '0006', label: 'Best card', row: '#row-amex', saved: 'best', note: 'Outlined on the page' },
+    { key: 'doordashSaved', card: 'Amex Gold', last4: '0001', label: 'Best card', row: '#row-amex', saved: 'best', note: 'Outlined on the page' },
+    {
+      key: 'targetSaved',
+      card: 'Amex Blue Cash Everyday',
+      last4: '0006',
+      label: 'Runner-up',
+      row: '#row-visa',
+      saved: 'runnerUp',
+      note: "Your best card isn't saved here; Chase Freedom Unlimited ••0003 is",
+    },
+  ];
+  for (const c of cases) {
+    const page = await ext.ctx.newPage();
+    await page.goto(PAGES[c.key]!);
+    await page.waitForLoadState('load');
+    const before = await formSnapshot(page);
+    const tabId = await tabIdFor(ext, PAGES[c.key]!);
+    const st = await waitForHighlight(ext, tabId);
+    expect(st.highlight, c.key).toMatchObject({ shown: true, label: c.label, count: 1 });
+    expect(st.saved, c.key).toBe(c.saved);
+    await expect.poll(async () => (await pillState(ext, tabId))?.pill?.savedNote ?? '', { timeout: 5000 }).toContain(c.note);
+    const pill = (await pillState(ext, tabId))!.pill!;
+    expect(pill.cardName, c.key).toBe(c.card);
+    expect(pill.last4, c.key).toBe(c.last4);
+    await expectOutlined(page, c.row);
+    const shots = process.env.BCP_SHOTS; // optional: save screenshots of the outline for a human to look at
+    if (shots) await page.waitForTimeout(500).then(() => page.screenshot({ path: join(shots, `${c.key}.png`) }));
+    // Scrolling moves the outline with the row.
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(150);
+    await expectOutlined(page, c.row);
+
+    const after = await formSnapshot(page);
+    expect(after, `${c.key}: form state`).toEqual(before);
+    expect((after as { events: string[] }).events, `${c.key}: events`).toEqual([]);
+
+    const popup = await openPopup(ext, tabId);
+    await expect(popup.locator('#best')).toContainText(`${c.card} ••${c.last4}`);
+    await expect(popup.locator('#saved')).toBeVisible();
+    if (c.saved === 'runnerUp') await expect(popup.locator('#saved')).toContainText("isn't saved on this site; Chase Freedom Unlimited ••0003");
+    else await expect(popup.locator('#saved')).toContainText(`Outlined on the page: your saved ${c.card} ••${c.last4}`);
+    await popup.close();
+    expect(await formSnapshot(page), `${c.key}: form state after popup`).toEqual(before);
+    await page.close();
+  }
+
+  // Without saved digits there is no outline and the pill has no last four.
+  await setLast4(ext, {});
+  const page = await ext.ctx.newPage();
+  await page.goto(PAGES.amazonSaved!);
+  const tabId = await tabIdFor(ext, PAGES.amazonSaved!);
+  const st = await waitForPill(ext, tabId);
+  expect(st.pill?.last4).toBeNull();
+  expect(st.highlight?.shown).toBe(false);
+  assertNoExtensionNetwork(ext);
+  await ext.ctx.close();
+});
+
+test('saved cards: click mode outlines the card from the popup button, with no pill', async () => {
+  const ext = await launch(newProfile());
+  await setLast4(ext, FAKE_LAST4);
+  const page = await ext.ctx.newPage();
+  await page.goto(PAGES.doordashSaved!);
+  await page.waitForLoadState('load');
+  const before = await formSnapshot(page);
+  const tabId = await tabIdFor(ext, PAGES.doordashSaved!);
+  expect(await pillState(ext, tabId)).toBeNull(); // no content script yet
+
+  const popup = await openPopup(ext, tabId);
+  await expect(popup.locator('#best')).toContainText('Amex Gold ••0001');
+  await popup.locator('#point').click();
+  await expect(popup.locator('#saved')).toContainText('Outlined on the page: your saved Amex Gold ••0001');
+  const st = await waitForHighlight(ext, tabId);
+  expect(st).toMatchObject({ shown: false, mode: 'click', saved: 'best', highlight: { shown: true, label: 'Best card' } });
+  await expectOutlined(page, '#row-amex');
+  expect(await formSnapshot(page)).toEqual(before);
+
+  // Pressing it again reuses the injected script: still one outline.
+  await popup.locator('#point').click();
+  await expect(popup.locator('#saved')).toContainText('Outlined');
+  expect((await pillState(ext, tabId))?.highlight?.count).toBe(1);
+  assertNoExtensionNetwork(ext);
+  await ext.ctx.close();
+});
+
+test('saved cards: last four live outside cardsFile and leave exports unless opted in', async () => {
+  const ext = await launch(newProfile());
+  const options = await ext.ctx.newPage();
+  options.on('dialog', (d) => void d.accept());
+  await options.goto(`chrome-extension://${ext.id}/options/index.html`);
+
+  await options.locator('[data-testid="last4-amex-gold"]').fill('12');
+  await options.locator('#save').click();
+  await expect(options.locator('#errors')).toContainText('exactly 4 digits');
+  expect(await storage(ext, 'last4')).toBeUndefined();
+
+  await options.locator('[data-testid="last4-amex-gold"]').fill('0001');
+  await options.locator('#save').click();
+  await expect(options.locator('#status')).toContainText('Saved');
+  expect(await storage(ext, 'last4')).toEqual({ 'amex-gold': '0001' });
+  expect(JSON.stringify(await storage(ext, 'cardsFile'))).not.toContain('last4');
+
+  const exportText = async () => {
+    const [download] = await Promise.all([options.waitForEvent('download'), options.locator('#export').click()]);
+    return { text: readFileSync(await download.path(), 'utf8'), path: await download.path() };
+  };
+  const plain = await exportText();
+  expect(plain.text).not.toContain('last4');
+  expect(plain.text).not.toContain('0001');
+  await expect(options.locator('#status')).toContainText('no last four digits');
+
+  await options.locator('#exportLast4').check();
+  const withDigits = await exportText();
+  expect(JSON.parse(withDigits.text).cards.find((c: { id: string }) => c.id === 'amex-gold').last4).toBe('0001');
+
+  // Importing that file puts the digits back in their own key, not in cardsFile.
+  await setLast4(ext, {});
+  await options.locator('#import').setInputFiles(withDigits.path);
+  await expect(options.locator('#status')).toContainText('Imported 6 cards');
+  expect(await storage(ext, 'last4')).toEqual({ 'amex-gold': '0001' });
+  expect(JSON.stringify(await storage(ext, 'cardsFile'))).not.toContain('last4');
+  await expect(options.locator('[data-testid="last4-amex-gold"]')).toHaveValue('0001');
+
+  // Clear all data wipes them.
+  await options.locator('#clear').click();
+  await expect(options.locator('#status')).toContainText('last four digits cleared');
+  expect(await storage(ext, 'last4')).toBeUndefined();
   assertNoExtensionNetwork(ext);
   await ext.ctx.close();
 });

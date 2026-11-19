@@ -8,17 +8,27 @@ import { parsePsl } from '../shared/psl';
 import { loadState, saveState, type Settings, type StoredState } from '../shared/state';
 import type { CheckoutScan } from '../content/detect';
 import type { PillData } from '../content/pill';
+import type { CardTarget, SavedStatus, SavedTargets } from '../content/saved-cards';
 import { capTogglesFor, rateText, type PopupData } from '../shared/view';
 
 const merchants = merchantsData as MerchantsFile;
 const psl = parsePsl(pslText);
 const SCRIPT_ID = 'bcp-detect';
 
+export interface SavedReport {
+  url: string;
+  status: SavedStatus;
+  cardId: string | null;
+  found: number;
+}
+
 interface TabEntry {
   page?: PageInfo;
   checkout?: CheckoutScan;
   decision?: Decision;
   dismissedUrl?: string;
+  saved?: SavedReport;
+  savedWaiters?: ((r: SavedReport) => void)[];
 }
 const tabs = new Map<number, TabEntry>();
 
@@ -69,10 +79,25 @@ function pillData(state: StoredState, d: Decision): PillData | null {
     color: card.color ?? '#444444',
     rateText: rateText(card, r.rate),
     runnerUpName: runner?.name ?? null,
+    last4: state.last4[card.id] ?? null,
     detail: `${r.reason}.${ask}`,
     warnings,
     domain: d.domain,
   };
+}
+
+function target(state: StoredState, id: string | null | undefined): CardTarget | null {
+  const card = cardById(state, id ?? null);
+  const last4 = card ? state.last4[card.id] : undefined;
+  if (!card || !last4) return null;
+  return { cardId: card.id, name: card.name, last4, network: card.network, color: card.color ?? '#444444' };
+}
+
+/** Best and runner-up with their saved last four digits; null when neither has digits saved. */
+function savedTargets(state: StoredState, d: Decision): SavedTargets | null {
+  const best = target(state, d.recommendation.cardId);
+  const runnerUp = target(state, d.recommendation.runnerUp?.cardId);
+  return best || runnerUp ? { best, runnerUp } : null;
 }
 
 async function rescan(tabId: number): Promise<void> {
@@ -103,6 +128,7 @@ async function popupData(tabId: number): Promise<PopupData> {
     await rescan(tabId);
   }
   const page: PageInfo = e.page && e.page.url === url ? e.page : { url, title: tab?.title ?? null };
+  const saved = e.saved && e.saved.url === url ? e.saved : null;
   // The popup always recomputes: it is often answering a change the user just made, and
   // storage.onChanged (which clears the cache) may not have fired yet.
   e.decision = undefined;
@@ -118,10 +144,18 @@ async function popupData(tabId: number): Promise<PopupData> {
     savedCategory: state.siteCategories[d.domain] ?? null,
     never: state.neverSites.includes(d.domain),
     isCheckout: e.checkout?.isCheckout ?? null,
+    last4: state.last4,
+    saved,
+    canPoint: Boolean(savedTargets(state, d)),
   };
 }
 
-async function onPage(tabId: number, page: PageInfo, checkout: CheckoutScan): Promise<{ showPill: boolean; pill: PillData | null }> {
+async function onPage(
+  tabId: number,
+  page: PageInfo,
+  checkout: CheckoutScan,
+  mode: 'auto' | 'click',
+): Promise<{ showPill: boolean; pill: PillData | null; targets: SavedTargets | null }> {
   const state = await loadState();
   const e = entry(tabId);
   if (e.page?.url !== page.url) e.decision = undefined;
@@ -133,7 +167,49 @@ async function onPage(tabId: number, page: PageInfo, checkout: CheckoutScan): Pr
     !state.settings.paused &&
     !state.neverSites.includes(d.domain) &&
     e.dismissedUrl !== page.url;
-  return { showPill: show, pill: show ? pillData(state, d) : null };
+  // Digits go to the page's content script only when it will use them: on a checkout page that
+  // shows the pill, or when the user pressed "Point to my card" in the popup.
+  const wantTargets = mode === 'click' || show;
+  return { showPill: mode === 'auto' && show, pill: mode === 'auto' && show ? pillData(state, d) : null, targets: wantTargets ? savedTargets(state, d) : null };
+}
+
+function waitForSaved(tabId: number, ms: number): Promise<SavedReport | null> {
+  const e = entry(tabId);
+  return new Promise((resolve) => {
+    const t = setTimeout(() => resolve(null), ms);
+    (e.savedWaiters ??= []).push((r) => {
+      clearTimeout(t);
+      resolve(r);
+    });
+  });
+}
+
+/** Popup button: outline the saved card on this tab. Uses activeTab + the optional scripting permission. */
+async function point(tabId: number): Promise<PopupData> {
+  const e = entry(tabId);
+  e.saved = undefined;
+  const waiting = waitForSaved(tabId, 2500);
+  let reached = false;
+  try {
+    const r = (await Promise.race([
+      chrome.tabs.sendMessage(tabId, { type: 'point' }),
+      new Promise((resolve) => setTimeout(() => resolve(null), 400)),
+    ])) as { ok?: boolean } | null;
+    reached = r?.ok === true;
+  } catch {
+    reached = false;
+  }
+  if (!reached) {
+    if (!chrome.scripting) return popupData(tabId);
+    try {
+      await chrome.scripting.executeScript({ target: { tabId }, func: () => void ((window as unknown as { __bcpMode: string }).__bcpMode = 'click') });
+      await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] });
+    } catch {
+      return popupData(tabId);
+    }
+  }
+  await waiting;
+  return popupData(tabId);
 }
 
 async function syncContentScripts(): Promise<boolean> {
@@ -160,7 +236,9 @@ async function updateSettings(patch: Partial<Settings>): Promise<Settings> {
 }
 
 type Msg =
-  | { type: 'page'; page: PageInfo; checkout: CheckoutScan }
+  | { type: 'page'; page: PageInfo; checkout: CheckoutScan; mode?: 'auto' | 'click' }
+  | { type: 'saved'; url: string; status: SavedStatus; cardId: string | null; found: number }
+  | { type: 'point'; tabId: number }
   | { type: 'popup'; tabId: number }
   | { type: 'setCategory'; tabId: number; domain: string; category: Category | null }
   | { type: 'setForeign'; tabId: number; domain: string; value: boolean | null }
@@ -175,7 +253,18 @@ async function handle(msg: Msg, sender: chrome.runtime.MessageSender): Promise<u
   const fromTab = sender.tab?.id;
   switch (msg.type) {
     case 'page':
-      return fromTab === undefined ? null : onPage(fromTab, msg.page, msg.checkout);
+      return fromTab === undefined ? null : onPage(fromTab, msg.page, msg.checkout, msg.mode === 'click' ? 'click' : 'auto');
+    case 'saved': {
+      if (fromTab === undefined) return null;
+      const e = entry(fromTab);
+      e.saved = { url: msg.url, status: msg.status, cardId: msg.cardId, found: msg.found };
+      const waiters = e.savedWaiters ?? [];
+      e.savedWaiters = [];
+      for (const w of waiters) w(e.saved);
+      return { ok: true };
+    }
+    case 'point':
+      return point(msg.tabId);
     case 'popup':
       return popupData(msg.tabId);
     case 'setCategory': {
@@ -261,6 +350,7 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
       e.page = undefined;
       e.decision = undefined;
       e.checkout = undefined;
+      e.saved = undefined;
     }
   }
 });

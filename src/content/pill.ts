@@ -1,13 +1,18 @@
 // The in-page pill. Drawn in a closed Shadow DOM so site styles cannot reach it. At most one per page.
 // It moves to whichever corner does not cover card fields or payment iframes.
 import { paymentElements } from './detect';
+import { highlightTarget } from './highlight';
 
 export interface PillData {
   cardName: string;
   color: string;
   rateText: string;
   runnerUpName: string | null;
+  /** Last four digits of the best card, when the user saved them in options. */
+  last4: string | null;
   detail: string;
+  /** Line about the site's saved cards, e.g. the runner-up is saved here but the best card is not. */
+  savedNote?: string | null;
   warnings: string[];
   domain: string;
 }
@@ -64,7 +69,8 @@ function place(host: HTMLElement): void {
   const box = host.getBoundingClientRect();
   const w = box.width || 340;
   const h = box.height || 90;
-  const avoid = paymentElements(document)
+  const hl = highlightTarget();
+  const avoid = [...paymentElements(document), ...(hl ? [hl] : [])]
     .map((e) => e.getBoundingClientRect())
     .filter((r) => r.width > 0 && r.height > 0);
   const c = chooseCorner(w, h, avoid);
@@ -82,12 +88,13 @@ const CSS = `
 .main { font-weight: 600; font-size: 14px; }
 .detail { color: #444; margin-top: 2px; }
 .warn { color: #8a4b00; margin-top: 4px; }
+.saved { color: #1a4c8b; margin-top: 4px; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
 button { all: unset; cursor: pointer; font-size: 12px; line-height: 1; padding: 6px 10px; border-radius: 999px; background: #f1f1f1; color: #111; }
 button:hover { background: #e4e4e4; }
 button:focus-visible { outline: 2px solid #1a4c8b; }
 @media (prefers-color-scheme: dark) {
-  .pill { background: #1f1f1f; color: #f2f2f2; } .detail { color: #c8c8c8; } .warn { color: #f0b35a; }
+  .pill { background: #1f1f1f; color: #f2f2f2; } .detail { color: #c8c8c8; } .warn { color: #f0b35a; } .saved { color: #9cc3ff; }
   button { background: #333; color: #f2f2f2; } button:hover { background: #444; }
 }`;
 
@@ -107,11 +114,17 @@ export function showPill(data: PillData, actions: { notNow: () => void; never: (
 
   const main = document.createElement('div');
   main.className = 'main';
-  main.textContent = `Use ${data.cardName} · ${data.rateText}${data.runnerUpName ? ` · runner-up ${data.runnerUpName}` : ''}`;
+  main.textContent = `Use ${data.cardName}${data.last4 ? ` ••${data.last4}` : ''} · ${data.rateText}${data.runnerUpName ? ` · runner-up ${data.runnerUpName}` : ''}`;
   const detail = document.createElement('div');
   detail.className = 'detail';
   detail.textContent = data.detail;
   pill.append(main, detail);
+  if (data.savedNote) {
+    const note = document.createElement('div');
+    note.className = 'saved';
+    note.textContent = data.savedNote;
+    pill.append(note);
+  }
   for (const w of data.warnings) {
     const el = document.createElement('div');
     el.className = 'warn';

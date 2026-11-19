@@ -59,4 +59,10 @@ export interface PopupData {
   savedCategory?: Category | null;
   never?: boolean;
   isCheckout?: boolean | null;
+  /** Saved last four digits by card id (extension pages only). */
+  last4?: Record<string, string>;
+  /** What the page's content script found in the site's saved-card list, if it ran. */
+  saved?: { url: string; status: 'best' | 'runnerUp' | 'none' | 'noList'; cardId: string | null; found: number } | null;
+  /** Best or runner-up has last four digits saved, so "Point to my card" can work. */
+  canPoint?: boolean;
 }

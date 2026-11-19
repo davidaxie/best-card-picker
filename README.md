@@ -20,7 +20,7 @@ follow, and `SCHEMA_CHANGES.md` for fields added beyond the PRD.
 | `data/public_suffix.dat` | Bundled Public Suffix List (MPL 2.0), used to turn `shop.example.co.uk` into `example.co.uk`. |
 | `src/engine/` | Pure TypeScript engine and validator, no dependencies. |
 | `src/background/service-worker.ts` | Runs the engine, caches one result per tab, sets the toolbar badge. |
-| `src/content/` | Auto mode only: checkout detection (`detect.ts`) and the Shadow DOM pill (`pill.ts`). |
+| `src/content/` | Checkout detection (`detect.ts`), the Shadow DOM pill (`pill.ts`), the saved-card finder (`saved-cards.ts`) and the outline overlay (`highlight.ts`). |
 | `src/popup/`, `src/options/` | Toolbar popup and options page (plain DOM). |
 | `tests/` | Vitest unit tests, fixtures, and the Playwright suite in `tests/e2e/`. |
 
@@ -73,6 +73,23 @@ permission prompt. Never load `dist-e2e/` for real browsing.
 5. Engine: see `docs/ENGINE_SPEC.md`. Defaults: Amex MR and Chase UR at 2.0 cents, cash wins ties,
    manual "cap reached" toggles.
 
+## Pointing at your saved card
+
+If you add a card's last four digits in options, the extension looks for the site's saved-card list
+("Visa ending in 1234", "•••• 1234", "x1234", "Amex ...1234") and draws an outline with a small
+"Best card" tag around the matching row. If the best card is not saved on that site but the runner-up
+is, it outlines the runner-up and says so. It works two ways:
+
+- Auto mode: on checkout pages, next to the pill.
+- Click-to-check: the popup's "Point to my card on this page" button. That asks Chrome for the optional
+  `scripting` permission (no prompt, it has no warning) and runs once in the current tab through
+  `activeTab`.
+
+The outline is an overlay in a closed Shadow DOM with `pointer-events: none`, outside the site's form.
+It reads page text and `aria-label` only, never input values, and never clicks, selects, focuses or
+changes anything: you make the final click. A row that names a different network (Discover •••• 1234
+when your Amex ends in 1234) is not a match.
+
 ## Permissions and privacy
 
 - Installed permissions: `storage` and `activeTab` only. `scripting` and `<all_urls>` are optional and
@@ -83,5 +100,9 @@ permission prompt. Never load `dist-e2e/` for real browsing.
 - Storage is `chrome.storage.local` only, never `chrome.storage.sync`.
 - Cards are a nickname and, optionally, the last four digits. The validator rejects anything that
   looks like a card number, CVV, expiry or address field.
-- "Clear all data" in options wipes per-site choices, cap toggles, never-show sites and settings.
+- Last four digits live in their own `chrome.storage.local` key (`last4`), never in `cardsFile` and
+  never in the bundled `data/cards.json`. Export leaves them out unless you tick "Include last four
+  digits". Importing a file that has them moves them into that key.
+- "Clear all data" in options wipes per-site choices, cap toggles, never-show sites, settings and the
+  saved last four digits.
 - Do not commit exported `cards.json` files or anything with your own history in it.

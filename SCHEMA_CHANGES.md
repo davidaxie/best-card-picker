@@ -40,3 +40,10 @@ All additions are optional fields. A file written to the PRD's original example 
 - `warnings` are `{ code, message }`. Golden tests compare the codes only.
 
 Golden tests: written against these additions from the start (47 cases).
+
+## 2026-11-19: last four digits move out of cardsFile (extension storage only)
+
+- The schema is unchanged: `card.last4` is still allowed in a cards file, so an exported file with digits still validates and the iPhone app can still read it.
+- The Chrome extension no longer stores digits inside `cardsFile`. They live in a separate `chrome.storage.local` key, `last4: { [cardId]: "1234" }`. On load, any `card.last4` found in stored `cardsFile` is moved there once.
+- Export omits `last4` unless the user ticks "Include last four digits". Import moves any `last4` into the separate key.
+- `data/cards.json` never carries `last4`; a unit test checks this.

@@ -3,12 +3,19 @@ import { NETWORKS, validateCardsFile } from '../engine';
 import type { Card, CardsFile, Category, Network, Rule } from '../engine';
 import { h } from '../shared/dom';
 import { exportCardsJson, importCardsJson } from '../shared/io';
-import { clearAllData, defaultCardsFile, loadState, saveState, type StoredState } from '../shared/state';
+import { clearAllData, defaultCardsFile, LAST4_RE, loadState, saveState, splitLast4, type StoredState } from '../shared/state';
 import { CATEGORY_OPTIONS, categoryLabel, fmtUsd } from '../shared/view';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 let state: StoredState;
 let draft: CardsFile;
+/** Last four digits being edited, keyed by the draft card object so an id rename keeps them. */
+let draftLast4 = new Map<Card, string>();
+
+function resetDraft(): void {
+  draft = clone(state.cardsFile);
+  draftLast4 = new Map(draft.cards.filter((c) => state.last4[c.id]).map((c) => [c, state.last4[c.id]!]));
+}
 
 function status(msg: string, isError = false): void {
   const el = $('status');
@@ -180,7 +187,13 @@ function renderCards(): void {
           numberField('Base rate', card.baseRate, (v) => (card.baseRate = v), { step: '0.5', min: '0', 'data-testid': `base-${card.id}` }),
           numberField('Foreign fee %', card.foreignFeePct, (v) => (card.foreignFeePct = v), { step: '0.1', min: '0' }),
           textField('Badge code', card.shortCode ?? '', (v) => (v ? (card.shortCode = v.toUpperCase()) : delete card.shortCode), { maxlength: '4' }),
-          textField('Last 4 (optional)', card.last4 ?? '', (v) => (v ? (card.last4 = v) : delete card.last4), { maxlength: '4', inputmode: 'numeric', pattern: '[0-9]{4}' }),
+          textField('Last 4 (optional, stays in this browser)', draftLast4.get(card) ?? '', (v) => (v.trim() ? draftLast4.set(card, v.trim()) : draftLast4.delete(card)), {
+            maxlength: '4',
+            inputmode: 'numeric',
+            pattern: '[0-9]{4}',
+            autocomplete: 'off',
+            'data-testid': `last4-${card.id}`,
+          }),
           h('label', {}, 'Color', color),
           h('label', {}, 'Enabled', enabled),
         ),
@@ -224,15 +237,25 @@ async function saveDraft(): Promise<void> {
   errorsEl.replaceChildren();
   const bad = draft.cards.some((c) => c.rules.some((r) => !Number.isFinite(r.rate) || (r.capUsdPerYear !== undefined && !Number.isFinite(r.capUsdPerYear))));
   const candidate: CardsFile = { ...clone(draft), updated: new Date().toISOString().slice(0, 10) };
+  for (const c of candidate.cards) delete c.last4;
+  const last4: Record<string, string> = {};
+  const last4Errors: string[] = [];
+  for (const [card, digits] of draftLast4) {
+    if (!draft.cards.includes(card)) continue;
+    if (!LAST4_RE.test(digits)) last4Errors.push(`${card.name || card.id}: last four must be exactly 4 digits, or empty.`);
+    else last4[card.id] = digits;
+  }
   const result = validateCardsFile(candidate);
-  if (!result.ok || bad) {
+  if (!result.ok || bad || last4Errors.length) {
     for (const e of result.errors) errorsEl.append(h('li', {}, e));
+    for (const e of last4Errors) errorsEl.append(h('li', {}, e));
     if (bad) errorsEl.append(h('li', {}, 'Every rate and cap must be a number.'));
     return status('Not saved: fix the errors listed under Cards.', true);
   }
-  await saveState({ cardsFile: candidate });
+  await saveState({ cardsFile: candidate, last4 });
   state.cardsFile = candidate;
-  draft = clone(candidate);
+  state.last4 = last4;
+  resetDraft();
   renderAll();
   status('Saved. The next recommendation uses these rules.');
 }
@@ -308,14 +331,15 @@ function renderSites(): void {
 // ---------- Import / export ----------
 function wireData(): void {
   $('export').onclick = () => {
-    const blob = new Blob([exportCardsJson(state.cardsFile)], { type: 'application/json' });
+    const withDigits = $<HTMLInputElement>('exportLast4').checked;
+    const blob = new Blob([exportCardsJson(state.cardsFile, withDigits ? state.last4 : undefined)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = h('a', { href: url, download: 'cards.json' });
     document.body.append(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    status('Exported cards.json to your downloads.');
+    status(withDigits ? 'Exported cards.json, including last four digits. Keep that file private.' : 'Exported cards.json (no last four digits).');
   };
   const input = $<HTMLInputElement>('import');
   input.onchange = async () => {
@@ -328,29 +352,33 @@ function wireData(): void {
       errorsEl.replaceChildren(...result.errors.map((e) => h('li', {}, e)));
       return status('Import failed: the file did not pass validation. Nothing changed.', true);
     }
-    await saveState({ cardsFile: result.value });
-    state.cardsFile = result.value;
-    draft = clone(result.value);
+    // Digits in an imported file move to their own storage key, never into cardsFile.
+    const split = splitLast4(result.value);
+    const last4 = { ...state.last4, ...split.last4 };
+    await saveState({ cardsFile: split.cardsFile, last4 });
+    state.cardsFile = split.cardsFile;
+    state.last4 = last4;
+    resetDraft();
     renderAll();
-    status(`Imported ${result.value.cards.length} cards.`);
+    status(`Imported ${split.cardsFile.cards.length} cards.`);
   };
   $('reset').onclick = async () => {
     if (!confirm('Replace your cards and point values with the bundled defaults?')) return;
     const fresh = defaultCardsFile();
     await saveState({ cardsFile: fresh });
     state.cardsFile = fresh;
-    draft = clone(fresh);
+    resetDraft();
     renderAll();
     status('Cards reset to defaults.');
   };
   $('clear').onclick = async () => {
-    if (!confirm('Clear per-site choices, cap toggles, never-show sites and settings? Your cards are kept.')) return;
+    if (!confirm('Clear per-site choices, cap toggles, never-show sites, settings and saved last four digits? Your card rules are kept.')) return;
     await chrome.runtime.sendMessage({ type: 'autoMode', enabled: false });
     await clearAllData(false);
     state = await loadState();
-    draft = clone(state.cardsFile);
+    resetDraft();
     renderAll();
-    status('All per-site data and settings cleared.');
+    status('All per-site data, settings and last four digits cleared.');
   };
   $('addCard').onclick = () => {
     const n = draft.cards.length + 1;
@@ -359,7 +387,7 @@ function wireData(): void {
   };
   $('save').onclick = () => void saveDraft();
   $('discard').onclick = () => {
-    draft = clone(state.cardsFile);
+    resetDraft();
     renderAll();
     status('Edits discarded.');
   };
@@ -377,9 +405,9 @@ function renderAll(): void {
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'local') return;
   void loadState().then((s) => {
-    const cardsChanged = 'cardsFile' in changes;
+    const cardsChanged = 'cardsFile' in changes || 'last4' in changes;
     state = s;
-    if (cardsChanged) draft = clone(s.cardsFile);
+    if (cardsChanged) resetDraft();
     renderGeneral();
     renderCaps();
     renderSites();
@@ -392,7 +420,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 void (async () => {
   state = await loadState();
-  draft = clone(state.cardsFile);
+  resetDraft();
   wireData();
   renderAll();
 })();

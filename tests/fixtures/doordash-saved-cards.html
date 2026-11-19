@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- Test fixture. Served by Playwright at https://www.doordash.com/consumer/checkout/payment/. DoorDash-style payment listbox. Fake digits only (0001, 0002); no personal data. -->
+<html lang="en-US"><head><meta charset="utf-8"><title>Checkout | DoorDash</title><meta property="og:site_name" content="DoorDash">
+<script>window.__events=[];for(const t of ['input','change','click','focus','focusin','beforeinput','select','submit','keydown'])document.addEventListener(t,(e)=>window.__events.push(t+':'+((e.target&&e.target.id)||(e.target&&e.target.tagName))),true);</script>
+<style>body{font-family:Arial,sans-serif;margin:0;padding:24px;min-height:1400px}main{max-width:900px}[role=option]{display:flex;gap:8px;padding:12px;border:1px solid #ddd;margin:6px 0;border-radius:8px}</style></head>
+<body><main>
+<h1>Checkout</h1>
+<p>Subtotal $31.40</p><p>Delivery fee $2.99</p><p>Total $38.12</p>
+<h2>Payment</h2>
+<div role="listbox" aria-label="Payment methods">
+  <div role="option" id="row-visa" aria-selected="true" data-anchor-id="PaymentRow"><span>Visa</span><span>...0002</span></div>
+  <div role="option" id="row-amex" aria-selected="false" data-anchor-id="PaymentRow"><span>Amex</span><span>x0001</span></div>
+</div>
+<iframe name="__privateStripeFrame5678" src="https://js.stripe.com/v3/elements-inner-card-test.html" title="Secure card payment input frame" style="width:400px;height:48px;border:1px solid #ccc"></iframe>
+<button data-anchor-id="PlaceOrderButton">Place Order</button>
+</main></body></html>

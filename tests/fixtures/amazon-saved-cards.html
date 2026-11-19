@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- Test fixture. Served by Playwright at https://www.amazon.com/checkout/p/p-106-0000001/pay. Amazon-style saved card radio list. Fake digits only (0003, 0006); no personal data. -->
+<html lang="en-US"><head><meta charset="utf-8"><title>Amazon.com Checkout</title>
+<script>window.__events=[];for(const t of ['input','change','click','focus','focusin','beforeinput','select','submit','keydown'])document.addEventListener(t,(e)=>window.__events.push(t+':'+((e.target&&e.target.id)||(e.target&&e.target.tagName))),true);</script>
+<style>body{font-family:Arial,sans-serif;margin:0;padding:24px;min-height:1400px}main{max-width:900px}.pm-row{display:block;padding:10px;border:1px solid #ddd;margin:6px 0;border-radius:4px}</style></head>
+<body><main>
+<h1>Review your order</h1>
+<section><h2>Shipping address</h2><p>Saved address on file</p></section>
+<form id="pmForm" action="/checkout/p/p-106-0000001/pay" method="post">
+<fieldset id="pm"><legend>Your credit and debit cards</legend>
+<div class="pmts-instrument-list" role="radiogroup">
+  <label class="pm-row" id="row-visa"><input type="radio" id="pm-visa" name="ppw-instrumentRowSelection" value="instrumentId=fake-b" checked> <span class="a-text-bold">Visa</span> <span>ending in 0003</span> <span class="a-color-secondary">Freedom</span></label>
+  <label class="pm-row" id="row-amex"><input type="radio" id="pm-amex" name="ppw-instrumentRowSelection" value="instrumentId=fake-a"> <span class="a-text-bold">Amex</span> <span>ending in 0006</span> <span class="a-color-secondary">Everyday</span></label>
+</div>
+</fieldset>
+<label class="pm-row">Gift card or promo code <input type="text" id="giftcode" autocomplete="off"></label>
+</form>
+<section><h2>Order summary</h2><p>Items: $42.99</p><p>Shipping: $0.00</p><p><strong>Order total: $42.99</strong></p></section>
+<span class="a-button"><button type="submit" form="pmForm" name="placeYourOrder1">Place your order</button></span>
+</main></body></html>

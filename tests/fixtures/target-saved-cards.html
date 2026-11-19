@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- Test fixture. Served by Playwright at https://www.target.com/checkout. Target-style saved card list with the mask and digits in separate spans. Fake digits only (0003, 0005, 0006); no personal data. -->
+<html lang="en-US"><head><meta charset="utf-8"><title>Checkout : Target</title>
+<script>window.__events=[];for(const t of ['input','change','click','focus','focusin','beforeinput','select','submit','keydown'])document.addEventListener(t,(e)=>window.__events.push(t+':'+((e.target&&e.target.id)||(e.target&&e.target.tagName))),true);</script>
+<style>body{font-family:Arial,sans-serif;margin:0;padding:24px;min-height:1400px}main{max-width:900px}ul{list-style:none;padding:0}li{padding:10px;border:1px solid #ddd;margin:6px 0;border-radius:6px}</style></head>
+<body><main>
+<h1>Checkout</h1>
+<p>Order total $54.17</p>
+<h2>Payment</h2>
+<ul class="saved-cards" role="radiogroup" aria-label="Saved payment cards">
+  <li role="radio" id="row-mc" aria-checked="true" tabindex="0"><span class="brand">Mastercard</span> <span>•••• 0005</span></li>
+  <li role="radio" id="row-visa" aria-checked="false" tabindex="-1" aria-label="Visa ending in 0003"><span class="brand">Visa</span> <span class="mask">••••</span><span class="digits"> 0003</span></li>
+  <li role="radio" id="row-discover" aria-checked="false" tabindex="-1"><span class="brand">Discover</span> <span>•••• 0006</span></li>
+  <li><button type="button" id="addCard">Add new card</button></li>
+</ul>
+<button type="button" id="placeOrder">Place your order</button>
+</main></body></html>

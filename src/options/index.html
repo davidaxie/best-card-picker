@@ -26,7 +26,8 @@
 
     <section id="cards">
       <h2>Cards</h2>
-      <p class="muted">Store a nickname and, if you like, the last four digits. Never a full card number.</p>
+      <p class="muted">Store a nickname and, if you like, the last four digits. Never a full card number.
+        The last four only stay in this browser; they let the extension point at the matching saved card on a checkout page.</p>
       <div id="cardList"></div>
       <div class="row">
         <button id="addCard" type="button">Add card</button>
@@ -51,6 +52,7 @@
       <h2>Import, export and reset</h2>
       <div class="row">
         <button id="export" type="button">Export cards.json</button>
+        <label><input type="checkbox" id="exportLast4" /> Include last four digits in the export</label>
         <label class="file">Import cards.json <input type="file" id="import" accept="application/json,.json" /></label>
         <button id="reset" type="button">Reset cards to defaults</button>
         <button id="clear" type="button" class="danger">Clear all data</button>

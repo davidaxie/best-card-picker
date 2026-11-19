@@ -45,18 +45,28 @@ function render(data: PopupData): void {
   const cards = data.cardsFile.cards;
   const card = cards.find((c) => c.id === r.cardId);
   const runner = cards.find((c) => c.id === r.runnerUp?.cardId);
+  const last4 = data.last4 ?? {};
+  const digits = (id: string | undefined) => (id && last4[id] ? ` ••${last4[id]}` : '');
 
   app.append(h('div', { class: 'site' }, d.domain || d.host));
   if (card && r.rate !== null) {
     app.append(
-      h('h1', { id: 'best' }, h('span', { class: 'swatch', style: `background:${card.color ?? '#444'}` }), `${card.name} · ${rateText(card, r.rate)}`),
+      h('h1', { id: 'best' }, h('span', { class: 'swatch', style: `background:${card.color ?? '#444'}` }), `${card.name}${digits(card.id)} · ${rateText(card, r.rate)}`),
       h('p', { class: 'reason', id: 'reason' }, r.reason),
     );
     if (runner && r.runnerUp) {
-      app.append(h('p', { class: 'muted', id: 'runner-up' }, `Runner-up: ${runner.name}, about ${Math.round(r.runnerUp.centsPerDollar * 100) / 100} cents per dollar`));
+      app.append(h('p', { class: 'muted', id: 'runner-up' }, `Runner-up: ${runner.name}${digits(runner.id)}, about ${Math.round(r.runnerUp.centsPerDollar * 100) / 100} cents per dollar`));
     }
   } else {
     app.append(h('h1', { id: 'best' }, 'No card accepted here'));
+  }
+
+  const savedLine = savedText(data, card?.name, runner?.name, digits);
+  if (savedLine) app.append(h('p', { class: 'saved', id: 'saved' }, savedLine));
+  if (data.canPoint) {
+    app.append(
+      h('button', { class: 'link', id: 'point', onclick: () => void pointHere(tabId) }, 'Point to my card on this page'),
+    );
   }
 
   for (const w of r.warnings) app.append(h('p', { class: 'warn', 'data-code': w.code }, w.message));
@@ -127,6 +137,35 @@ function render(data: PopupData): void {
     onchange: () => void send({ type: 'setNever', tabId, domain: d.domain, never: neverBox.checked }).then(render),
   });
   app.append(h('section', {}, h('label', {}, neverBox, 'Never show the pill on this site')), footer(data));
+}
+
+function savedText(data: PopupData, bestName: string | undefined, runnerName: string | undefined, digits: (id: string | undefined) => string): string | null {
+  const s = data.saved;
+  const r = data.decision?.recommendation;
+  if (!s || !r) return null;
+  if (s.status === 'best') return `Outlined on the page: your saved ${bestName}${digits(r.cardId ?? undefined)}. You make the final click.`;
+  if (s.status === 'runnerUp') {
+    if (!digits(r.cardId ?? undefined)) return `${runnerName}${digits(r.runnerUp?.cardId)} is saved on this site and outlined. Add ${bestName}'s last four in settings to look for it too.`;
+    return `Your best card isn't saved on this site; ${runnerName}${digits(r.runnerUp?.cardId)} is, and it's outlined.`;
+  }
+  if (s.status === 'none') return `None of the ${s.found} saved cards on this page match ${bestName}${digits(r.cardId ?? undefined)}.`;
+  return 'No saved-card list found on this page yet. Open the payment step, then try again.';
+}
+
+async function pointHere(tabId: number): Promise<void> {
+  // scripting has no install warning, so Chrome grants it without a prompt. activeTab (from clicking
+  // the toolbar icon) gives access to this tab only, until it navigates.
+  let granted = false;
+  try {
+    granted = await chrome.permissions.request({ permissions: ['scripting'] });
+  } catch {
+    granted = false;
+  }
+  if (!granted) {
+    document.getElementById('point')?.replaceWith(h('p', { class: 'warn' }, 'Chrome did not allow the extension to look at this page.'));
+    return;
+  }
+  render(await send({ type: 'point', tabId }));
 }
 
 function footer(data: PopupData): HTMLElement {
