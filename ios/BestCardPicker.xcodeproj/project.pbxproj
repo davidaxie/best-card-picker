@@ -1,0 +1,841 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0BAA4417A02C638A604BCF31 /* OpenHereIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7082F6ADD77665FB8B0D81AE /* OpenHereIntent.swift */; };
+		0E32AD419487EA8B9417FB27 /* BestCardWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C23148C4EC06645032AB9058 /* BestCardWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		195041CC83E4F05BB85FA6F7 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6165665FD834314EDA45A227 /* RootView.swift */; };
+		19A5A411A7767819CE33B7BF /* NearbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4991D14E1C127F26B828801E /* NearbyView.swift */; };
+		286C4174061F5CB3807C0BCD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F48167AB1A155393006329A /* SwiftUI.framework */; };
+		37921A3D704B0112BC955ED1 /* CardPickerCore in Frameworks */ = {isa = PBXBuildFile; productRef = A80217822E45C6147B1C02AF /* CardPickerCore */; };
+		3C665FBE879077F9D9205A17 /* NearbySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF608E7F855FB9AA108ECA72 /* NearbySearch.swift */; };
+		3CBCA0F657A1D653216AFFE0 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AE9FAAB25E558627F97999 /* LocationService.swift */; };
+		3FC637F8F9246E511D84F6D8 /* BestCardEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 4F0E8F20BAB39F65820E2018 /* BestCardEngine */; };
+		50B77474F281FB4FA21A4B04 /* HereResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7865C9C46BB26B1AA04DF322 /* HereResolver.swift */; };
+		54ABF2E8F6164B82974675D2 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF466A38B137B86BFB164DE4 /* Notifications.swift */; };
+		54EFC607434D3A70388059E7 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99EB3222139D1B3425C4F739 /* WidgetKit.framework */; };
+		5BA59756C00AD98F03E75D70 /* SharedConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65059BE5CF082F6FF08EC0F6 /* SharedConstants.swift */; };
+		5F044E221DC46186A7DFA87A /* BestCardPickerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D444DCD929D8646557CFC082 /* BestCardPickerApp.swift */; };
+		861C679362557EEB196A25C7 /* AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA946807683C6A2C2F51493E /* AppTests.swift */; };
+		88CA3B94CB34F1880FF0C02C /* SharedConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65059BE5CF082F6FF08EC0F6 /* SharedConstants.swift */; };
+		8D583EDF28BDBC1AFDB70CB2 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A272C23668629B5271858555 /* AppModel.swift */; };
+		98B54F81F5B5B47337187314 /* WhichCardHereIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61462D159B8BDE58765467 /* WhichCardHereIntent.swift */; };
+		A240ABF69BF2F1EC3245BA35 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 714AB7D514C20C3DBB566090 /* GridView.swift */; };
+		ABC27BF12AD8B79E1179272B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECADA78912DAEE90A8D9CC1 /* SettingsView.swift */; };
+		ACC0752302BAE1587F1EA9B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3916C8471950A140B76A2DB0 /* Assets.xcassets */; };
+		BC37B505F0976F22D5A065BF /* BestCardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94678ED3EB049C7D2181EBBD /* BestCardWidget.swift */; };
+		C02162B3F44D0192BF58C7E9 /* OpenHereIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7082F6ADD77665FB8B0D81AE /* OpenHereIntent.swift */; };
+		C73872E336838124F0E930BF /* UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7364A851687AC9EFCC7D5817 /* UITests.swift */; };
+		CBA45E03F7DECD58221D5360 /* PlaceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B1BAA9CD005009DAF64E0F /* PlaceMonitor.swift */; };
+		D3FFBA989358990E4A792DA5 /* SavedPlacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9FC8F1E261ADDA7DFBEB70 /* SavedPlacesView.swift */; };
+		E9816B39E30F12CF93B9B6C7 /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A374602F9906713F574BA3 /* CardsView.swift */; };
+		F18C0750FF8088365F44C528 /* CardPickerCore in Frameworks */ = {isa = PBXBuildFile; productRef = C45D91F6980DEEE4ABAE98D8 /* CardPickerCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		02AAFF348A514880F4983698 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F700AD5C567CDB08FDD5031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D59C4C5093F2EED06EFD2B8B;
+			remoteInfo = BestCardPicker;
+		};
+		042219ADDF3C7342C3C659B0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F700AD5C567CDB08FDD5031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0557121AE1BEE79E0B336C5C;
+			remoteInfo = BestCardWidget;
+		};
+		09F4CCE8CB076E40C8D5C37E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F700AD5C567CDB08FDD5031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D59C4C5093F2EED06EFD2B8B;
+			remoteInfo = BestCardPicker;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		977D766D46793D8078DD5C0D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0E32AD419487EA8B9417FB27 /* BestCardWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		244CCA678C1087446F401E6F /* BestCardPicker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BestCardPicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F5E649BDB75ECC9139CC5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2FB825B46C60BDF3EC9694BE /* BestCardWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BestCardWidget.entitlements; sourceTree = "<group>"; };
+		3916C8471950A140B76A2DB0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3F1A290AF562BE314A83D22B /* BestCardPickerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BestCardPickerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F48167AB1A155393006329A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		4991D14E1C127F26B828801E /* NearbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyView.swift; sourceTree = "<group>"; };
+		52AE9FAAB25E558627F97999 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		598ACEEB6DDBADC5CFF1D35C /* BestCardEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BestCardEngine; path = Packages/BestCardEngine; sourceTree = SOURCE_ROOT; };
+		6165665FD834314EDA45A227 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		65059BE5CF082F6FF08EC0F6 /* SharedConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedConstants.swift; sourceTree = "<group>"; };
+		6B61462D159B8BDE58765467 /* WhichCardHereIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhichCardHereIntent.swift; sourceTree = "<group>"; };
+		7082F6ADD77665FB8B0D81AE /* OpenHereIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenHereIntent.swift; sourceTree = "<group>"; };
+		714AB7D514C20C3DBB566090 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		7364A851687AC9EFCC7D5817 /* UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITests.swift; sourceTree = "<group>"; };
+		7865C9C46BB26B1AA04DF322 /* HereResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HereResolver.swift; sourceTree = "<group>"; };
+		88A64CEA107756636F59A641 /* BestCardPicker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BestCardPicker.entitlements; sourceTree = "<group>"; };
+		94678ED3EB049C7D2181EBBD /* BestCardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BestCardWidget.swift; sourceTree = "<group>"; };
+		99EB3222139D1B3425C4F739 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A272C23668629B5271858555 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		B351E376B32DE886EECC55A6 /* BestCardPickerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BestCardPickerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA946807683C6A2C2F51493E /* AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTests.swift; sourceTree = "<group>"; };
+		C23148C4EC06645032AB9058 /* BestCardWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = BestCardWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9A374602F9906713F574BA3 /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
+		CF466A38B137B86BFB164DE4 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		D444DCD929D8646557CFC082 /* BestCardPickerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BestCardPickerApp.swift; sourceTree = "<group>"; };
+		DECADA78912DAEE90A8D9CC1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DF608E7F855FB9AA108ECA72 /* NearbySearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbySearch.swift; sourceTree = "<group>"; };
+		E7B1BAA9CD005009DAF64E0F /* PlaceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceMonitor.swift; sourceTree = "<group>"; };
+		EB9FC8F1E261ADDA7DFBEB70 /* SavedPlacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlacesView.swift; sourceTree = "<group>"; };
+		FD55FFE03D574AC93BD49A05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		38871D910F0A01909710C80C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F18C0750FF8088365F44C528 /* CardPickerCore in Frameworks */,
+				54EFC607434D3A70388059E7 /* WidgetKit.framework in Frameworks */,
+				286C4174061F5CB3807C0BCD /* SwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D9FD6CFABFA2FA86D537E55 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FC637F8F9246E511D84F6D8 /* BestCardEngine in Frameworks */,
+				37921A3D704B0112BC955ED1 /* CardPickerCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0382EE6B21F72AC94B23F9EA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3F48167AB1A155393006329A /* SwiftUI.framework */,
+				99EB3222139D1B3425C4F739 /* WidgetKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		04EA888230110130F74291FC /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				7865C9C46BB26B1AA04DF322 /* HereResolver.swift */,
+				6B61462D159B8BDE58765467 /* WhichCardHereIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		1259E32CA993B5A769B32339 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C9A374602F9906713F574BA3 /* CardsView.swift */,
+				714AB7D514C20C3DBB566090 /* GridView.swift */,
+				4991D14E1C127F26B828801E /* NearbyView.swift */,
+				6165665FD834314EDA45A227 /* RootView.swift */,
+				EB9FC8F1E261ADDA7DFBEB70 /* SavedPlacesView.swift */,
+				DECADA78912DAEE90A8D9CC1 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2BEA4B060678AEAE6C85B533 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A272C23668629B5271858555 /* AppModel.swift */,
+				3916C8471950A140B76A2DB0 /* Assets.xcassets */,
+				88A64CEA107756636F59A641 /* BestCardPicker.entitlements */,
+				D444DCD929D8646557CFC082 /* BestCardPickerApp.swift */,
+				2F5E649BDB75ECC9139CC5EB /* Info.plist */,
+				CF466A38B137B86BFB164DE4 /* Notifications.swift */,
+				04EA888230110130F74291FC /* Intents */,
+				765E39C650FBB523F436DE4A /* Location */,
+				1259E32CA993B5A769B32339 /* Views */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		4CCB5F32D950E0E4F26A02F3 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				7364A851687AC9EFCC7D5817 /* UITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		765E39C650FBB523F436DE4A /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				52AE9FAAB25E558627F97999 /* LocationService.swift */,
+				DF608E7F855FB9AA108ECA72 /* NearbySearch.swift */,
+				E7B1BAA9CD005009DAF64E0F /* PlaceMonitor.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
+		85797D45ED6353E47F4BE568 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				7082F6ADD77665FB8B0D81AE /* OpenHereIntent.swift */,
+				65059BE5CF082F6FF08EC0F6 /* SharedConstants.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		965A2A322B8D3BEE0BD34B9B /* AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				BA946807683C6A2C2F51493E /* AppTests.swift */,
+			);
+			path = AppTests;
+			sourceTree = "<group>";
+		};
+		AA804C9D0771CC7875F34F96 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				2FB825B46C60BDF3EC9694BE /* BestCardWidget.entitlements */,
+				94678ED3EB049C7D2181EBBD /* BestCardWidget.swift */,
+				FD55FFE03D574AC93BD49A05 /* Info.plist */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
+		D2389104313B3666119FEA37 = {
+			isa = PBXGroup;
+			children = (
+				2BEA4B060678AEAE6C85B533 /* App */,
+				965A2A322B8D3BEE0BD34B9B /* AppTests */,
+				F9BF3CF6A9BA02EE63CB04AD /* Packages */,
+				85797D45ED6353E47F4BE568 /* Shared */,
+				4CCB5F32D950E0E4F26A02F3 /* UITests */,
+				AA804C9D0771CC7875F34F96 /* Widget */,
+				0382EE6B21F72AC94B23F9EA /* Frameworks */,
+				F230D30E831767F7AF9A3A28 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F230D30E831767F7AF9A3A28 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				244CCA678C1087446F401E6F /* BestCardPicker.app */,
+				B351E376B32DE886EECC55A6 /* BestCardPickerTests.xctest */,
+				3F1A290AF562BE314A83D22B /* BestCardPickerUITests.xctest */,
+				C23148C4EC06645032AB9058 /* BestCardWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F9BF3CF6A9BA02EE63CB04AD /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				598ACEEB6DDBADC5CFF1D35C /* BestCardEngine */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0557121AE1BEE79E0B336C5C /* BestCardWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3E97A134181E647157BF434 /* Build configuration list for PBXNativeTarget "BestCardWidget" */;
+			buildPhases = (
+				6392C22D5055CFF81705BB75 /* Sources */,
+				38871D910F0A01909710C80C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BestCardWidget;
+			packageProductDependencies = (
+				C45D91F6980DEEE4ABAE98D8 /* CardPickerCore */,
+			);
+			productName = BestCardWidget;
+			productReference = C23148C4EC06645032AB9058 /* BestCardWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		200F3DC8FD1E15BF469C741C /* BestCardPickerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0DAF846127FB0E5DF375A9E8 /* Build configuration list for PBXNativeTarget "BestCardPickerTests" */;
+			buildPhases = (
+				4A01A15AA15AB8CDF54F41EA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E935BF49FDE8A577BAF5D63 /* PBXTargetDependency */,
+			);
+			name = BestCardPickerTests;
+			packageProductDependencies = (
+			);
+			productName = BestCardPickerTests;
+			productReference = B351E376B32DE886EECC55A6 /* BestCardPickerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		9910E05548ED97D117CF949F /* BestCardPickerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AB95F5272B542C7D233A08B /* Build configuration list for PBXNativeTarget "BestCardPickerUITests" */;
+			buildPhases = (
+				78C030462C6AEF73DB8B03D0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D23976DB3286E8223AA0C75 /* PBXTargetDependency */,
+			);
+			name = BestCardPickerUITests;
+			packageProductDependencies = (
+			);
+			productName = BestCardPickerUITests;
+			productReference = 3F1A290AF562BE314A83D22B /* BestCardPickerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D59C4C5093F2EED06EFD2B8B /* BestCardPicker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA25C7BA4FFC434D2A342214 /* Build configuration list for PBXNativeTarget "BestCardPicker" */;
+			buildPhases = (
+				664A025DA64DD2B0E948C4B1 /* Sync shared data (data/*.json) */,
+				6A828A2A1BFFB89DA97BF5C7 /* Sources */,
+				EFDD4FDCFD4DFACE552CF787 /* Resources */,
+				4D9FD6CFABFA2FA86D537E55 /* Frameworks */,
+				977D766D46793D8078DD5C0D /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DFC2BFBE37A6DC08A9359EBD /* PBXTargetDependency */,
+			);
+			name = BestCardPicker;
+			packageProductDependencies = (
+				4F0E8F20BAB39F65820E2018 /* BestCardEngine */,
+				A80217822E45C6147B1C02AF /* CardPickerCore */,
+			);
+			productName = BestCardPicker;
+			productReference = 244CCA678C1087446F401E6F /* BestCardPicker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9F700AD5C567CDB08FDD5031 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					0557121AE1BEE79E0B336C5C = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					200F3DC8FD1E15BF469C741C = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					9910E05548ED97D117CF949F = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = D59C4C5093F2EED06EFD2B8B;
+					};
+					D59C4C5093F2EED06EFD2B8B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B9B2CC50C22A1DD1FF36905D /* Build configuration list for PBXProject "BestCardPicker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D2389104313B3666119FEA37;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F79C5FC5959BB83F6E41B2DA /* XCLocalSwiftPackageReference "Packages/BestCardEngine" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D59C4C5093F2EED06EFD2B8B /* BestCardPicker */,
+				200F3DC8FD1E15BF469C741C /* BestCardPickerTests */,
+				9910E05548ED97D117CF949F /* BestCardPickerUITests */,
+				0557121AE1BEE79E0B336C5C /* BestCardWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EFDD4FDCFD4DFACE552CF787 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACC0752302BAE1587F1EA9B1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		664A025DA64DD2B0E948C4B1 /* Sync shared data (data/*.json) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sync shared data (data/*.json)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/scripts/sync-shared-data.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A01A15AA15AB8CDF54F41EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				861C679362557EEB196A25C7 /* AppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6392C22D5055CFF81705BB75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC37B505F0976F22D5A065BF /* BestCardWidget.swift in Sources */,
+				0BAA4417A02C638A604BCF31 /* OpenHereIntent.swift in Sources */,
+				5BA59756C00AD98F03E75D70 /* SharedConstants.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6A828A2A1BFFB89DA97BF5C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D583EDF28BDBC1AFDB70CB2 /* AppModel.swift in Sources */,
+				5F044E221DC46186A7DFA87A /* BestCardPickerApp.swift in Sources */,
+				E9816B39E30F12CF93B9B6C7 /* CardsView.swift in Sources */,
+				A240ABF69BF2F1EC3245BA35 /* GridView.swift in Sources */,
+				50B77474F281FB4FA21A4B04 /* HereResolver.swift in Sources */,
+				3CBCA0F657A1D653216AFFE0 /* LocationService.swift in Sources */,
+				3C665FBE879077F9D9205A17 /* NearbySearch.swift in Sources */,
+				19A5A411A7767819CE33B7BF /* NearbyView.swift in Sources */,
+				54ABF2E8F6164B82974675D2 /* Notifications.swift in Sources */,
+				C02162B3F44D0192BF58C7E9 /* OpenHereIntent.swift in Sources */,
+				CBA45E03F7DECD58221D5360 /* PlaceMonitor.swift in Sources */,
+				195041CC83E4F05BB85FA6F7 /* RootView.swift in Sources */,
+				D3FFBA989358990E4A792DA5 /* SavedPlacesView.swift in Sources */,
+				ABC27BF12AD8B79E1179272B /* SettingsView.swift in Sources */,
+				88CA3B94CB34F1880FF0C02C /* SharedConstants.swift in Sources */,
+				98B54F81F5B5B47337187314 /* WhichCardHereIntent.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		78C030462C6AEF73DB8B03D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C73872E336838124F0E930BF /* UITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3E935BF49FDE8A577BAF5D63 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D59C4C5093F2EED06EFD2B8B /* BestCardPicker */;
+			targetProxy = 09F4CCE8CB076E40C8D5C37E /* PBXContainerItemProxy */;
+		};
+		8D23976DB3286E8223AA0C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D59C4C5093F2EED06EFD2B8B /* BestCardPicker */;
+			targetProxy = 02AAFF348A514880F4983698 /* PBXContainerItemProxy */;
+		};
+		DFC2BFBE37A6DC08A9359EBD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0557121AE1BEE79E0B336C5C /* BestCardWidget */;
+			targetProxy = 042219ADDF3C7342C3C659B0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		14B6C9D4F6CD517582FADF54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BestCardPicker;
+			};
+			name = Release;
+		};
+		4D9D3D145400C7C7FDB0F0AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		5A55804D4D203476EC3F7F8B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BestCardPicker;
+			};
+			name = Debug;
+		};
+		6FA3259EC662B392538239A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Widget/BestCardWidget.entitlements;
+				INFOPLIST_FILE = Widget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8F042E111CE18F4E6F738622 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Widget/BestCardWidget.entitlements;
+				INFOPLIST_FILE = Widget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9AA5ACFC0B81C882DC170C59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BestCardPicker.app/BestCardPicker";
+			};
+			name = Debug;
+		};
+		ACC4316AD0ED2C7A304C3A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BestCardPicker.app/BestCardPicker";
+			};
+			name = Release;
+		};
+		D70B9DE41292F8B0203B33DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		DA50B8FC90EDBF001FBAE531 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/BestCardPicker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Card Picker";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EBE409296B51179C8DC22186 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/BestCardPicker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Card Picker";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidxie.bestcardpicker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0DAF846127FB0E5DF375A9E8 /* Build configuration list for PBXNativeTarget "BestCardPickerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9AA5ACFC0B81C882DC170C59 /* Debug */,
+				ACC4316AD0ED2C7A304C3A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5AB95F5272B542C7D233A08B /* Build configuration list for PBXNativeTarget "BestCardPickerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A55804D4D203476EC3F7F8B /* Debug */,
+				14B6C9D4F6CD517582FADF54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B9B2CC50C22A1DD1FF36905D /* Build configuration list for PBXProject "BestCardPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D70B9DE41292F8B0203B33DA /* Debug */,
+				4D9D3D145400C7C7FDB0F0AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C3E97A134181E647157BF434 /* Build configuration list for PBXNativeTarget "BestCardWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F042E111CE18F4E6F738622 /* Debug */,
+				6FA3259EC662B392538239A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FA25C7BA4FFC434D2A342214 /* Build configuration list for PBXNativeTarget "BestCardPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA50B8FC90EDBF001FBAE531 /* Debug */,
+				EBE409296B51179C8DC22186 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		F79C5FC5959BB83F6E41B2DA /* XCLocalSwiftPackageReference "Packages/BestCardEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/BestCardEngine;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4F0E8F20BAB39F65820E2018 /* BestCardEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BestCardEngine;
+		};
+		A80217822E45C6147B1C02AF /* CardPickerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CardPickerCore;
+		};
+		C45D91F6980DEEE4ABAE98D8 /* CardPickerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CardPickerCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 9F700AD5C567CDB08FDD5031 /* Project object */;
+}
