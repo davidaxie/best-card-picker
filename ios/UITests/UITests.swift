@@ -36,12 +36,20 @@ final class CardPickerUITests: XCTestCase {
                       || app.cells.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline mode is on'")).firstMatch.exists)
     }
 
+    /// PRD: a category grid answer takes one tap and shows in under 200 ms.
+    /// The app measures tap to rendered answer itself (XCUITest's own tap
+    /// and wait overhead is over a second, so it can't measure this).
     @MainActor
-    func testGridTapLatency() {
+    func testGridAnswerUnder200ms() {
         let app = launch()
-        measure(metrics: [XCTClockMetric()]) {
-            app.buttons["tile-restaurant"].tap()
-            _ = app.staticTexts["answerCardName"].waitForExistence(timeout: 1)
+        for tile in ["restaurant", "gas_ev", "costco", "drugstore", "us_supermarket"] {
+            app.buttons["tile-\(tile)"].tap()
+            let latency = app.staticTexts["answerLatencyMs"]
+            XCTAssertTrue(latency.waitForExistence(timeout: 2), tile)
+            let ms = Int(latency.label) ?? .max
+            XCTAssertLessThan(ms, 200, "\(tile) took \(ms) ms")
+            print("grid-latency \(tile): \(ms) ms")
         }
     }
+
 }

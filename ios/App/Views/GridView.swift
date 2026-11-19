@@ -7,6 +7,10 @@ struct GridView: View {
     @Environment(AppModel.self) private var model
     @State private var selected: GridTile?
     @State private var foreign = false
+    /// Tap-to-render time, shown only under UI tests to check the PRD's 200 ms.
+    @State private var tapTime: ContinuousClock.Instant?
+    @State private var latencyMs: Int?
+    private let measuring = ProcessInfo.processInfo.arguments.contains("-uiTesting")
 
     private let columns = [GridItem(.adaptive(minimum: 104), spacing: 12)]
 
@@ -23,6 +27,7 @@ struct GridView: View {
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(GridTile.all) { tile in
                             Button {
+                                tapTime = .now
                                 selected = tile
                             } label: {
                                 VStack(spacing: 6) {
@@ -37,6 +42,9 @@ struct GridView: View {
                             .accessibilityIdentifier("tile-\(tile.id)")
                         }
                     }
+                    if measuring, let latencyMs {
+                        Text("\(latencyMs)").font(.caption2).accessibilityIdentifier("answerLatencyMs")
+                    }
                     Toggle("Paying abroad or in another currency", isOn: $foreign)
                         .font(.subheadline)
                         .accessibilityIdentifier("foreignToggle")
@@ -44,6 +52,12 @@ struct GridView: View {
                 .padding()
             }
             .navigationTitle("What are you buying?")
+            .task(id: selected) {
+                // Runs after SwiftUI has committed the update that shows the answer.
+                guard measuring, let tapTime else { return }
+                await Task.yield()
+                latencyMs = Int((ContinuousClock.now - tapTime) / .milliseconds(1))
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { model.showHere = true } label: { Label("Which card here?", systemImage: "location.circle") }
