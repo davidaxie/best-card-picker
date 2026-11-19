@@ -5,3 +5,7 @@ ios/build/
 *.xcuserstate
 xcuserdata/
 DerivedData/
+dist-e2e/
+test-results/
+playwright-report/
+.e2e-profiles/

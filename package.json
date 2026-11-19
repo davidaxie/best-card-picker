@@ -5,11 +5,12 @@
   "type": "module",
   "description": "Private, local-only best credit card picker: shared engine + Chrome extension.",
   "scripts": {
-    "build": "tsc --noEmit && vite build && node scripts/build-content.mjs",
+    "build": "tsc --noEmit && node scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "npm run build && playwright test",
-    "typecheck": "tsc --noEmit"
+    "test:e2e": "npm run build && npm run build:e2e && playwright test",
+    "typecheck": "tsc --noEmit",
+    "build:e2e": "BCP_E2E=1 node scripts/build.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
