@@ -11,7 +11,7 @@ export function exportCardsJson(file: CardsFile, includeLast4?: Record<string, s
   for (const c of copy.cards) {
     delete c.last4;
     const d = includeLast4?.[c.id];
-    if (d && /^\d{4}$/.test(d)) c.last4 = d;
+    if (d && /^\d{4,5}$/.test(d)) c.last4 = d;
   }
   return JSON.stringify(copy, null, 2) + '\n';
 }

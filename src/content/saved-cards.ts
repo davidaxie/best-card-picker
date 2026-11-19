@@ -35,8 +35,8 @@ export interface SavedMatch {
   found: number;
 }
 
-// "ending in 1234", "ends with 1234", "•••• 1234", "**** 1234", "xxxx1234", "...1234", "…1234", "x1234", "x-1234".
-const LAST4_RE = /(?:\b(?:ending|ends)\s+(?:in|with)\s*:?\s*|(?:[•·∙●◦*]{2,}|[xX]{2,}|\.{2,}|…)\s{0,3}|(?:^|[\s(])[xX]-?)(\d{4})(?!\d)/g;
+// 4 or 5 digits: "ending in 1234", "ending in 12345", "ends with 1234", "•••• 1234", "**** 1234", "xxxx1234", "...1234", "…1234", "x1234", "x-1234".
+const LAST4_RE = /(?:\b(?:ending|ends)\s+(?:in|with)\s*:?\s*|(?:[•·∙●◦*]{2,}|[xX]{2,}|\.{2,}|…)\s{0,3}|(?:^|[\s(])[xX]-?)(\d{4,5})(?!\d)/g;
 
 const NETWORK_WORDS: [Network, RegExp][] = [
   ['amex', /\b(amex|american express)\b/i],
@@ -124,8 +124,16 @@ export function findSavedCards(doc: Document): SavedCard[] {
   return out;
 }
 
+/**
+ * Stored and shown digits match when the shorter is the end of the longer: a stored 5-digit Amex
+ * ending matches a page that shows only 4, and a page that shows 5 must agree on all 5.
+ */
+export function sameEnding(stored: string, shown: string): boolean {
+  return stored.length >= shown.length ? stored.endsWith(shown) : shown.endsWith(stored);
+}
+
 function matches(saved: SavedCard, t: CardTarget): boolean {
-  return saved.last4 === t.last4 && (saved.network === null || saved.network === t.network);
+  return sameEnding(t.last4, saved.last4) && (saved.network === null || saved.network === t.network);
 }
 
 /** Best card first, then the runner-up. A row naming a different network is never a match. */

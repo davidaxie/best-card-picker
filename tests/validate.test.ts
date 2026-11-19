@@ -87,12 +87,16 @@ describe('validator rejects bad input', () => {
       expect(validateCardsFile(c).ok, key).toBe(false);
     }
   });
-  it('last4 must be exactly four digits', () => {
+  it('last4 must be 4 or 5 digits', () => {
     const c = clone(cards) as unknown as { cards: Record<string, unknown>[] };
     c.cards[0]!.last4 = '1234';
     expect(validateCardsFile(c).ok).toBe(true);
-    c.cards[0]!.last4 = '123456';
-    expect(validateCardsFile(c).ok).toBe(false);
+    c.cards[0]!.last4 = '12345';
+    expect(validateCardsFile(c).ok).toBe(true);
+    for (const bad of ['123', '123456', '12a4', 1234]) {
+      c.cards[0]!.last4 = bad;
+      expect(validateCardsFile(c).ok, String(bad)).toBe(false);
+    }
   });
   it('non-object input', () => {
     expect(validateCardsFile('nope').ok).toBe(false);

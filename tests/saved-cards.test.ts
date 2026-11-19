@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { highlightState, removeHighlight, showHighlight } from '../src/content/highlight';
-import { findSavedCards, last4sIn, matchSaved, networkIn, type CardTarget, type SavedTargets } from '../src/content/saved-cards';
+import { findSavedCards, last4sIn, matchSaved, networkIn, sameEnding, type CardTarget, type SavedTargets } from '../src/content/saved-cards';
 import { exportCardsJson, importCardsJson } from '../src/shared/io';
 import { cleanLast4, defaultCardsFile, splitLast4 } from '../src/shared/state';
 
@@ -32,9 +32,11 @@ describe('last four patterns', () => {
     expect(last4sIn('Visa …0002')).toEqual(['0002']);
     expect(last4sIn('x0001')).toEqual(['0001']);
     expect(last4sIn('Card (x-0003)')).toEqual(['0003']);
+    expect(last4sIn('Amex ending in 10006')).toEqual(['10006']);
+    expect(last4sIn('American Express •••• 10006')).toEqual(['10006']);
   });
   it('ignores prices, years, order numbers and longer digit runs', () => {
-    for (const s of ['Total $1,234.00', 'Order 1234', 'Expires 2028', '©2026 Example', 'ending in 12345', 'Room 4x1234', 'Call 555-0100']) {
+    for (const s of ['Total $1,234.00', 'Order 1234', 'Expires 2028', '©2026 Example', 'ending in 123456', 'Room 4x1234', 'Call 555-0100']) {
       expect(last4sIn(s), s).toEqual([]);
     }
   });
@@ -43,6 +45,36 @@ describe('last four patterns', () => {
     expect(networkIn('Visa •••• 0003')).toBe('visa');
     expect(networkIn('Pay with Visa, Mastercard or Discover')).toBeNull();
     expect(networkIn('•••• 0003')).toBeNull();
+  });
+});
+
+describe('4 or 5 digit endings', () => {
+  it('a stored 5-digit ending matches a page showing its last 4, or all 5', () => {
+    expect(sameEnding('10006', '0006')).toBe(true);
+    expect(sameEnding('10006', '10006')).toBe(true);
+    expect(sameEnding('10006', '20006')).toBe(false);
+    expect(sameEnding('0006', '10006')).toBe(true); // stored 4, page shows 5
+    expect(sameEnding('0006', '0007')).toBe(false);
+  });
+
+  it('outlines an Amex stored as 5 digits on pages that print 4 or 5', () => {
+    const bce5 = { ...BCE, last4: '10006' };
+    document.body.innerHTML = '<ul><li id="a">Visa ending in 0003</li><li id="b">Amex ending in 0006</li></ul>';
+    expect(matchSaved(findSavedCards(document), { best: bce5, runnerUp: null }).element?.id).toBe('b');
+    document.body.innerHTML = '<ul><li id="a">Amex ending in 20006</li><li id="b">Amex ending in 10006</li></ul>';
+    expect(matchSaved(findSavedCards(document), { best: bce5, runnerUp: null }).element?.id).toBe('b');
+    // A different 5-digit Amex ending is not a match, even though the last 4 agree.
+    document.body.innerHTML = '<ul><li id="a">Amex ending in 20006</li></ul>';
+    expect(matchSaved(findSavedCards(document), { best: bce5, runnerUp: null }).status).toBe('none');
+  });
+
+  it('storage and export keep 4 or 5 digits and drop anything else', () => {
+    expect(cleanLast4({ a: '0001', b: '10006', c: '123456', d: '123' })).toEqual({ a: '0001', b: '10006' });
+    const f = defaultCardsFile();
+    const out = JSON.parse(exportCardsJson(f, { [f.cards[0]!.id]: '10001', [f.cards[1]!.id]: '123456' }));
+    expect(out.cards[0].last4).toBe('10001');
+    expect(out.cards[1].last4).toBeUndefined();
+    expect(importCardsJson(JSON.stringify(out)).ok).toBe(true);
   });
 });
 
@@ -200,8 +232,8 @@ describe('last four storage and export', () => {
     expect(f.cards[0]!.last4).toBe('0001'); // input not mutated
   });
 
-  it('cleanLast4 keeps exactly-four-digit strings only', () => {
-    expect(cleanLast4({ a: '0001', b: '123', c: 1234, d: '12345', e: '00a1' })).toEqual({ a: '0001' });
+  it('cleanLast4 keeps 4 or 5 digit strings only', () => {
+    expect(cleanLast4({ a: '0001', b: '123', c: 1234, d: '123456', e: '00a1', f: '10002' })).toEqual({ a: '0001', f: '10002' });
     expect(cleanLast4(null)).toEqual({});
   });
 

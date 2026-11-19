@@ -47,3 +47,9 @@ Golden tests: written against these additions from the start (47 cases).
 - The Chrome extension no longer stores digits inside `cardsFile`. They live in a separate `chrome.storage.local` key, `last4: { [cardId]: "1234" }`. On load, any `card.last4` found in stored `cardsFile` is moved there once.
 - Export omits `last4` unless the user ticks "Include last four digits". Import moves any `last4` into the separate key.
 - `data/cards.json` never carries `last4`; a unit test checks this.
+
+## 2026-11-19: `last4` accepts 4 or 5 digits
+
+- `card.last4` pattern loosened from `^[0-9]{4}$` to `^[0-9]{4,5}$` in `data/cards.schema.json` and `src/engine/validate.ts`. Amex shows a 5-digit ending on its own site. The field keeps its name for compatibility.
+- Matching on a checkout page: stored and shown digits match when the shorter is the end of the longer. A stored `12345` matches a page showing `2345`; a page showing all 5 must agree on all 5.
+- iPhone: `ios/Packages/BestCardEngine/Sources/BestCardEngine/Validator.swift` still requires exactly 4, so an exported cards file with a 5-digit value fails there until it is loosened the same way.

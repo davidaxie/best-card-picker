@@ -75,10 +75,11 @@ permission prompt. Never load `dist-e2e/` for real browsing.
 
 ## Pointing at your saved card
 
-If you add a card's last four digits in options, the extension looks for the site's saved-card list
+If you add a card's last 4 or 5 digits in options (Amex shows 5 on its own site), the extension looks for the site's saved-card list
 ("Visa ending in 1234", "•••• 1234", "x1234", "Amex ...1234") and draws an outline with a small
 "Best card" tag around the matching row. If the best card is not saved on that site but the runner-up
-is, it outlines the runner-up and says so. It works two ways:
+is, it outlines the runner-up and says so. A stored 5-digit ending also matches a page that shows
+only the last 4. It works two ways:
 
 - Auto mode: on checkout pages, next to the pill.
 - Click-to-check: the popup's "Point to my card on this page" button. That asks Chrome for the optional
@@ -98,7 +99,7 @@ when your Amex ends in 1234) is not a match.
   no `fetch`, `XMLHttpRequest`, WebSocket or beacon calls; `npm run test:e2e` checks this in `dist/`
   and records any request from the service worker, popup or options page.
 - Storage is `chrome.storage.local` only, never `chrome.storage.sync`.
-- Cards are a nickname and, optionally, the last four digits. The validator rejects anything that
+- Cards are a nickname and, optionally, the last 4 or 5 digits. The validator rejects anything that
   looks like a card number, CVV, expiry or address field.
 - Last four digits live in their own `chrome.storage.local` key (`last4`), never in `cardsFile` and
   never in the bundled `data/cards.json`. Export leaves them out unless you tick "Include last four

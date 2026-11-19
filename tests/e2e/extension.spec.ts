@@ -546,6 +546,23 @@ test('saved cards: Auto mode outlines the best saved card and never touches the 
   await ext.ctx.close();
 });
 
+test('saved cards: a 5-digit Amex ending matches a page that prints only the last 4', async () => {
+  const ext = await launch(newProfile());
+  await enableAutoMode(ext);
+  await setLast4(ext, { ...FAKE_LAST4, 'amex-gold': '10001' });
+  const page = await ext.ctx.newPage();
+  await page.goto(PAGES.doordashSaved!); // shows "x0001"
+  const tabId = await tabIdFor(ext, PAGES.doordashSaved!);
+  const st = await waitForHighlight(ext, tabId);
+  expect(st.highlight).toMatchObject({ shown: true, label: 'Best card' });
+  expect(st.pill?.last4).toBe('10001');
+  await expectOutlined(page, '#row-amex');
+  const popup = await openPopup(ext, tabId);
+  await expect(popup.locator('#best')).toContainText('Amex Gold ••10001');
+  assertNoExtensionNetwork(ext);
+  await ext.ctx.close();
+});
+
 test('saved cards: click mode outlines the card from the popup button, with no pill', async () => {
   const ext = await launch(newProfile());
   await setLast4(ext, FAKE_LAST4);
@@ -581,7 +598,7 @@ test('saved cards: last four live outside cardsFile and leave exports unless opt
 
   await options.locator('[data-testid="last4-amex-gold"]').fill('12');
   await options.locator('#save').click();
-  await expect(options.locator('#errors')).toContainText('exactly 4 digits');
+  await expect(options.locator('#errors')).toContainText('4 or 5 digits');
   expect(await storage(ext, 'last4')).toBeUndefined();
 
   await options.locator('[data-testid="last4-amex-gold"]').fill('0001');
@@ -610,6 +627,12 @@ test('saved cards: last four live outside cardsFile and leave exports unless opt
   expect(await storage(ext, 'last4')).toEqual({ 'amex-gold': '0001' });
   expect(JSON.stringify(await storage(ext, 'cardsFile'))).not.toContain('last4');
   await expect(options.locator('[data-testid="last4-amex-gold"]')).toHaveValue('0001');
+
+  // Five digits (Amex prints a 5-digit ending on its own site) are accepted too.
+  await options.locator('[data-testid="last4-amex-blue-cash-everyday"]').fill('10006');
+  await options.locator('#save').click();
+  await expect(options.locator('#status')).toContainText('Saved');
+  expect(await storage(ext, 'last4')).toEqual({ 'amex-gold': '0001', 'amex-blue-cash-everyday': '10006' });
 
   // Clear all data wipes them.
   await options.locator('#clear').click();

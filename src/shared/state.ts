@@ -48,9 +48,10 @@ export function defaultState(): StoredState {
 
 export const STATE_KEYS = ['cardsFile', 'siteCategories', 'siteForeign', 'capState', 'settings', 'neverSites', 'last4'] as const;
 
-export const LAST4_RE = /^\d{4}$/;
+/** 4 digits, or 5 (Amex shows a 5-digit ending on its own site). The key stays named last4. */
+export const LAST4_RE = /^\d{4,5}$/;
 
-/** Only well-formed entries survive: exactly four digits, keyed by card id. */
+/** Only well-formed entries survive: 4 or 5 digits, keyed by card id. */
 export function cleanLast4(map: unknown): Record<string, string> {
   const out: Record<string, string> = {};
   if (!map || typeof map !== 'object') return out;

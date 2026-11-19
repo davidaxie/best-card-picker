@@ -187,10 +187,10 @@ function renderCards(): void {
           numberField('Base rate', card.baseRate, (v) => (card.baseRate = v), { step: '0.5', min: '0', 'data-testid': `base-${card.id}` }),
           numberField('Foreign fee %', card.foreignFeePct, (v) => (card.foreignFeePct = v), { step: '0.1', min: '0' }),
           textField('Badge code', card.shortCode ?? '', (v) => (v ? (card.shortCode = v.toUpperCase()) : delete card.shortCode), { maxlength: '4' }),
-          textField('Last 4 (optional, stays in this browser)', draftLast4.get(card) ?? '', (v) => (v.trim() ? draftLast4.set(card, v.trim()) : draftLast4.delete(card)), {
-            maxlength: '4',
+          textField('Last digits, 4 or 5 (optional, stays in this browser)', draftLast4.get(card) ?? '', (v) => (v.trim() ? draftLast4.set(card, v.trim()) : draftLast4.delete(card)), {
+            maxlength: '5',
             inputmode: 'numeric',
-            pattern: '[0-9]{4}',
+            pattern: '[0-9]{4,5}',
             autocomplete: 'off',
             'data-testid': `last4-${card.id}`,
           }),
@@ -242,7 +242,7 @@ async function saveDraft(): Promise<void> {
   const last4Errors: string[] = [];
   for (const [card, digits] of draftLast4) {
     if (!draft.cards.includes(card)) continue;
-    if (!LAST4_RE.test(digits)) last4Errors.push(`${card.name || card.id}: last four must be exactly 4 digits, or empty.`);
+    if (!LAST4_RE.test(digits)) last4Errors.push(`${card.name || card.id}: last digits must be 4 or 5 digits, or empty.`);
     else last4[card.id] = digits;
   }
   const result = validateCardsFile(candidate);

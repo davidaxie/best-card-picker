@@ -59,7 +59,7 @@
           }
         },
         "enabled": { "type": "boolean" },
-        "last4": { "type": "string", "pattern": "^[0-9]{4}$" },
+        "last4": { "type": "string", "pattern": "^[0-9]{4,5}$" },
         "verify": { "type": "array", "items": { "type": "string" } },
         "note": { "type": "string", "maxLength": 500 }
       }

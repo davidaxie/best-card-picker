@@ -96,7 +96,7 @@ export function validateCardsFile(input: unknown): ValidationResult<CardsFile> {
       else if (isObj(pv) && !(c.currency in pv)) errors.push(`${p}.currency: "${c.currency}" has no entry in pointValuesCents`);
       if (!isNum(c.foreignFeePct) || c.foreignFeePct < 0 || c.foreignFeePct > 10) errors.push(`${p}.foreignFeePct: number from 0 to 10`);
       if (!isNum(c.baseRate) || c.baseRate < 0 || c.baseRate > 100) errors.push(`${p}.baseRate: number from 0 to 100`);
-      if (c.last4 !== undefined && (typeof c.last4 !== 'string' || !/^\d{4}$/.test(c.last4))) errors.push(`${p}.last4: exactly 4 digits`);
+      if (c.last4 !== undefined && (typeof c.last4 !== 'string' || !/^\d{4,5}$/.test(c.last4))) errors.push(`${p}.last4: 4 or 5 digits`);
       checkOptional(c, 'enabled', 'boolean', p, errors);
       checkOptional(c, 'note', 'string', p, errors);
       if (c.verify !== undefined && (!Array.isArray(c.verify) || !c.verify.every((x) => typeof x === 'string'))) errors.push(`${p}.verify: list of field names`);
