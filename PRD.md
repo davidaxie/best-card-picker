@@ -250,7 +250,7 @@ The whole point is that no company sees David's data, so these rules beat conven
 5. **Read pages, never forms.** The content script looks at the URL, page structure and prices. It never reads what is typed into inputs and never touches payment iframes.
 6. **Smallest permissions.** The extension starts with storage and activeTab; site-wide access is an opt-in switch. The iPhone app asks for "Always" location only when saved place alerts are turned on.
 7. **Local history only.** Per-site category choices and cap toggles stay in local storage. A "Clear all data" button wipes them.
-8. **Code stays private.** Keep it in a local git repo or a private GitHub repo. Commit no personal data: the default cards.json holds card names and public earn rates only.
+8. **Code is public, data stays private.** On Nov 18, 2026 David chose to publish the code as a public GitHub repo (github.com/davidaxie/best-card-picker). Commit no personal data: the default cards.json holds card names and public earn rates only. Never commit exported cards.json files, per-site history, saved places, last-four digits, signing team IDs or provisioning profiles.
 
 ## Milestones and testing (original order)
 
@@ -293,6 +293,7 @@ Two Claude Code sessions work in this one folder at the same time, on disjoint f
 - The extension session writes `data/cards.json`, `data/merchants.json` and `data/golden_tests.json` FIRST (M0) and commits them before anything else, so the iPhone session can test against them.
 - The schema in this PRD is the contract. If either session needs a schema change, it records the request in `SCHEMA_CHANGES.md` (append only, dated) instead of editing the other side's files.
 - Commit only your own paths (`git add <paths>`, never `git add -A`). Never rewrite history, never switch branches.
+- The repo is public at github.com/davidaxie/best-card-picker. Both sessions share this one checkout, so no pull is needed: after each commit, run `git push origin main`. Never force-push.
 - The iPhone app bundles a copy of the shared data files via an Xcode build step or a copy script under `ios/`, never by moving them out of `data/`.
 
 Sources: earn rates and product facts were checked on November 18, 2026, mostly from review sites (Upgraded Points, The Points Party, The Points Guy, One Mile at a Time, Frequent Miler, PointsCrowd, Apple Support, Apple Developer). Confirm against each issuer's terms page before treating a rate as final.
