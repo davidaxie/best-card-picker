@@ -52,7 +52,7 @@ struct CardsView: View {
     }
 
     private func summary(_ card: Card) -> String {
-        let rules = card.rules.map { "\(Engine.formatRate($0.rate, currency: card.currency)) \(Categories.label($0.category).lowercased())" }
+        let rules = card.rules.map { "\(Engine.formatRate($0.rate, currency: card.currency)) \(Categories.label($0.category).lowercasedFirst)" }
         return (rules + ["\(Engine.formatRate(card.baseRate, currency: card.currency)) else"]).joined(separator: ", ")
     }
 }
@@ -72,7 +72,7 @@ struct CapToggles: View {
                 get: { model.data.capReached(cardId: card.id, category: rule.category) },
                 set: { on in model.update { $0.setCap(cardId: card.id, category: rule.category, reached: on) } })) {
                 VStack(alignment: .leading) {
-                    Text("\(card.shortCode ?? card.name) \(Categories.label(rule.category).lowercased())")
+                    Text("\(card.shortCode ?? card.name) \(Categories.label(rule.category).lowercasedFirst)")
                     Text("$\(Engine.formatNumber(rule.capUsdPerYear ?? 0)) a year at \(Engine.formatRate(rule.rate, currency: card.currency))")
                         .font(.caption).foregroundStyle(.secondary)
                 }
