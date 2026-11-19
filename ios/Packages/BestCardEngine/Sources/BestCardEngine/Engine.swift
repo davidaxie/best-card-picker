@@ -202,13 +202,14 @@ public struct Engine: Sendable {
         var warnings: [EngineWarning] = []
         let feeCards = candidates.filter { $0.foreignFeePct > 0 }
         if foreign, !feeCards.isEmpty {
-            warnings.append(EngineWarning(code: .foreignFees, message: "Foreign purchase: \(feeCards.map(\.name).joined(separator: ", ")) charge foreign fees."))
+            let list = feeCards.map { "\($0.name) (\(Self.formatNumber($0.foreignFeePct))% fee)" }.joined(separator: ", ")
+            warnings.append(EngineWarning(code: .foreignFees, message: "Foreign purchase: avoid \(list)."))
         }
 
         guard !candidates.isEmpty else {
-            warnings.append(EngineWarning(code: .noAcceptedCard, message: "None of your cards is accepted here."))
+            warnings.append(EngineWarning(code: .noAcceptedCard, message: "None of your cards are accepted here."))
             return Recommendation(cardId: nil, rate: nil, centsPerDollar: nil, basis: nil, category: category, foreign: foreign,
-                                  reason: "None of your cards is accepted here.", runnerUp: nil, warnings: warnings,
+                                  reason: "None of your cards are accepted here.", runnerUp: nil, warnings: warnings,
                                   merchant: merchant, ranked: [])
         }
 
@@ -235,21 +236,22 @@ public struct Engine: Sendable {
         let runner = ranked.count > 1 ? ranked[1] : nil
 
         if ctx.mayNotTakeAmex == true || merchant?.mayNotTakeAmex == true, card.network.lowercased() == "amex" {
-            warnings.append(EngineWarning(code: .mayNotTakeAmex, message: "This merchant may not take Amex. Have \(runner.flatMap { byId[$0.cardId]?.name } ?? "a backup card") ready."))
+            let alt = ranked.first { byId[$0.cardId]?.network.lowercased() != "amex" }.flatMap { byId[$0.cardId]?.name }
+            warnings.append(EngineWarning(code: .mayNotTakeAmex, message: "This site may not take Amex.\(alt.map { " Backup: \($0)." } ?? "")"))
         }
         if let rule = best.appliedRule, let cap = rule.capUsdPerYear,
            let used = Self.capEntry(options, cardId: card.id, category: rule.category)?.usedUsd,
            used >= 0.9 * cap, used < cap {
-            warnings.append(EngineWarning(code: .capNearLimit, message: "\(card.name) is near its $\(Self.formatNumber(cap)) yearly cap \(Categories.phrase(rule.category))."))
+            warnings.append(EngineWarning(code: .capNearLimit, message: "\(card.name) is near its $\(Self.formatNumber(cap)) yearly cap \(Categories.phrase(category))."))
         }
-        if best.appliedRule?.verify == true {
-            warnings.append(EngineWarning(code: .verifyRule, message: "Check this rate against \(card.name)'s current terms."))
+        if let rule = best.appliedRule, rule.verify == true {
+            warnings.append(EngineWarning(code: .verifyRule, message: "\(card.name) \(Self.formatRate(rule.rate, currency: card.currency)) \(Categories.phrase(rule.category)) is marked verify. Check the issuer's terms."))
         }
         if foreign, card.verify?.contains("foreignFeePct") == true {
-            warnings.append(EngineWarning(code: .verifyCard, message: "Confirm \(card.name)'s foreign transaction fee."))
+            warnings.append(EngineWarning(code: .verifyCard, message: "\(card.name)'s \(Self.formatNumber(card.foreignFeePct))% foreign fee is marked verify."))
         }
-        if merchant?.verify == true {
-            warnings.append(EngineWarning(code: .verifyMerchant, message: "This merchant's category is a best guess; the bank may code it differently."))
+        if let merchant, merchant.verify == true {
+            warnings.append(EngineWarning(code: .verifyMerchant, message: "\(merchant.name ?? merchant.match): \(merchant.note ?? "category or card acceptance is marked verify.")"))
         }
 
         return Recommendation(
@@ -271,10 +273,13 @@ public struct Engine: Sendable {
         return s
     }
 
-    /// One decimal, ".0" dropped: "8", "3.6".
-    public static func formatCentsShort(_ cents: Double) -> String {
-        let r = (cents * 10).rounded(.toNearestOrAwayFromZero) / 10
-        return r == r.rounded() ? String(Int(r)) : String(format: "%.1f", r)
+    /// JavaScript `String(Math.round(x * 100) / 100)`: "8", "3.6", "2.9".
+    public static func formatCentsShort(_ x: Double) -> String {
+        let r = (x * 100 + 0.5).rounded(.down) / 100
+        if r == r.rounded() { return String(Int(r)) }
+        var s = String(format: "%.2f", r)
+        while s.hasSuffix("0") { s.removeLast() }
+        return s
     }
 
     /// "4x" for points cards, "3%" for cash back.
@@ -287,17 +292,15 @@ public struct Engine: Sendable {
         String(format: "%.1f", cents)
     }
 
+    /// Same text as reasonFor() in src/engine/recommend.ts.
     public func reason(for score: CardScore, card: Card, category: String, foreign: Bool) -> String {
-        let rate = Self.formatRate(score.rate, currency: card.currency)
+        let rate = card.currency == "cash" ? "\(Self.formatNumber(score.rate))% cash back" : "\(Self.formatNumber(score.rate))x"
+        let value = "about \(Self.formatCentsShort(score.centsPerDollar)) cents per dollar"
         let fee = foreign && card.foreignFeePct > 0 ? " after the \(Self.formatNumber(card.foreignFeePct))% foreign fee" : ""
-        let value = "about \(Self.formatCentsShort(score.centsPerDollar)) cents per dollar\(fee)"
-        if let perk = score.perkReason {
-            return "Perk pick: \(perk) (\(rate), \(value))"
+        switch score.basis {
+        case .perk: return "Perk pick: \(score.perkReason ?? "") (\(rate), \(value)\(fee))"
+        case .bonus: return "\(rate) \(Categories.phrase(category)), \(value)\(fee)"
+        case .base: return "\(rate) on everything else, \(value)\(fee)"
         }
-        let cashBack = card.currency == "cash" ? " cash back" : ""
-        if score.basis == .bonus {
-            return "\(rate)\(cashBack) \(Categories.phrase(category)), \(value)"
-        }
-        return "\(rate)\(cashBack) on everything else, \(value)"
     }
 }

@@ -28,7 +28,7 @@ let package = Package(
         .testTarget(
             name: "BestCardEngineTests",
             dependencies: ["BestCardEngine"],
-            resources: [.copy("Resources/golden_tests.json")],
+            resources: [.copy("Resources/golden_tests.json"), .copy("Resources/ts_parity.json")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(

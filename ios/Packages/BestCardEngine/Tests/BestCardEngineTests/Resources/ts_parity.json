@@ -1,0 +1,2525 @@
+{
+  "generatedFrom": "src/engine (TypeScript)",
+  "cases": [
+    {
+      "id": "prd-restaurant-us-instore",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-supermarket-us",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "us_supermarket",
+      "foreign": false,
+      "reason": "4x at US supermarkets, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-blue-cash-everyday",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-gas-us",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "gas_ev",
+      "foreign": false,
+      "reason": "3x on gas and EV charging, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-blue-cash-everyday",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-amazon-online-retail",
+      "cardId": "amex-blue-cash-everyday",
+      "rate": 3,
+      "centsPerDollar": 3,
+      "basis": "bonus",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "3% cash back on US online retail, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-drugstore",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "drugstore",
+      "foreign": false,
+      "reason": "3x at drugstores, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-united-perk",
+      "cardId": "united-explorer",
+      "rate": 3,
+      "centsPerDollar": 3.6,
+      "basis": "perk",
+      "category": "airline_united",
+      "foreign": false,
+      "reason": "Perk pick: free first checked bag and priority boarding on United (3x, about 3.6 cents per dollar)",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": "united.com",
+      "ranked": [
+        {
+          "cardId": "united-explorer",
+          "rate": 3,
+          "centsPerDollar": 3.6,
+          "basis": "perk"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-costco-instore-visa-only",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "wholesale_club",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": "costco",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-restaurant-foreign-gbp",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": true,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "prd-general-foreign",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 1,
+      "centsPerDollar": 2,
+      "basis": "base",
+      "category": "general",
+      "foreign": true,
+      "reason": "1x on everything else, about 2 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 2
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 0,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-doordash",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": "doordash.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-ubereats",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": "ubereats.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-instacart",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "online_grocery",
+      "foreign": false,
+      "reason": "3x on online grocery, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "instacart.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-safeway-verify",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "us_supermarket",
+      "foreign": false,
+      "reason": "4x at US supermarkets, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-blue-cash-everyday",
+        "centsPerDollar": 3
+      },
+      "warnings": [
+        {
+          "code": "verify_merchant",
+          "message": "Safeway: Verify how online orders code."
+        }
+      ],
+      "merchantMatch": "safeway.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-aa-perk",
+      "cardId": "citi-aa-platinum",
+      "rate": 2,
+      "centsPerDollar": 2.9,
+      "basis": "perk",
+      "category": "airline_aa",
+      "foreign": false,
+      "reason": "Perk pick: free first checked bag and boarding perks on American (2x, about 2.9 cents per dollar)",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": "aa.com",
+      "ranked": [
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "perk"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-delta-airline-direct",
+      "cardId": "amex-gold",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "airline_direct",
+      "foreign": false,
+      "reason": "3x on flights booked with the airline, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 4
+      },
+      "warnings": [
+        {
+          "code": "verify_rule",
+          "message": "Amex Gold 3x on flights booked with the airline is marked verify. Check the issuer's terms."
+        }
+      ],
+      "merchantMatch": "delta.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-marriott",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 2,
+      "centsPerDollar": 4,
+      "basis": "bonus",
+      "category": "hotel_direct",
+      "foreign": false,
+      "reason": "2x on hotels, about 4 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "marriott.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-airbnb",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "vacation_rental",
+      "foreign": false,
+      "reason": "3x on vacation rentals, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "airbnb.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-chase-travel-perk",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 5,
+      "centsPerDollar": 10,
+      "basis": "perk",
+      "category": "chase_travel",
+      "foreign": false,
+      "reason": "Perk pick: uses the $100 Chase Travel hotel credit (5x, about 10 cents per dollar)",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 10
+      },
+      "warnings": [
+        {
+          "code": "verify_merchant",
+          "message": "Chase Travel: category or card acceptance is marked verify."
+        }
+      ],
+      "merchantMatch": "travelsecure.chase.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 5,
+          "centsPerDollar": 10,
+          "basis": "perk"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 5,
+          "centsPerDollar": 10,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-amextravel",
+      "cardId": "amex-gold",
+      "rate": 5,
+      "centsPerDollar": 10,
+      "basis": "bonus",
+      "category": "amex_travel_prepaid_hotel",
+      "foreign": false,
+      "reason": "5x on Amex Travel prepaid hotels, about 10 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [
+        {
+          "code": "verify_rule",
+          "message": "Amex Gold 5x on Amex Travel prepaid hotels is marked verify. Check the issuer's terms."
+        },
+        {
+          "code": "verify_merchant",
+          "message": "Amex Travel: Prepaid hotels only. Flights and other bookings here earn differently."
+        }
+      ],
+      "merchantMatch": "amextravel.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 5,
+          "centsPerDollar": 10,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-netflix",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "streaming",
+      "foreign": false,
+      "reason": "3x on streaming, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "netflix.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-cvs-verify",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "drugstore",
+      "foreign": false,
+      "reason": "3x at drugstores, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [
+        {
+          "code": "verify_merchant",
+          "message": "CVS: Verify how online orders code."
+        }
+      ],
+      "merchantMatch": "cvs.com",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-uber-rides",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 2,
+      "centsPerDollar": 4,
+      "basis": "bonus",
+      "category": "rideshare_transit",
+      "foreign": false,
+      "reason": "2x on rideshare and transit, about 4 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "uber.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-hertz",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 2,
+      "centsPerDollar": 4,
+      "basis": "bonus",
+      "category": "rental_car",
+      "foreign": false,
+      "reason": "2x on rental cars, about 4 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "hertz.com",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-subdomain",
+      "cardId": "amex-blue-cash-everyday",
+      "rate": 3,
+      "centsPerDollar": 3,
+      "basis": "bonus",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "3% cash back on US online retail, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-unknown-domain",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "general",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-explicit-category-wins",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "brand-trader-joes",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "us_supermarket",
+      "foreign": false,
+      "reason": "4x at US supermarkets, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-blue-cash-everyday",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "trader joes",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "brand-walmart-general",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "general",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": "walmart",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "brand-costco-gas",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "gas_ev",
+      "foreign": false,
+      "reason": "3x on gas and EV charging, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "costco gasoline",
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "map-costco-online",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "wholesale_club",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [
+        {
+          "code": "verify_merchant",
+          "message": "Costco: costco.com is believed not to take Amex; confirm."
+        }
+      ],
+      "merchantMatch": "costco.com",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-bce-online-reached",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-bce-online-used-full",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-bce-online-near",
+      "cardId": "amex-blue-cash-everyday",
+      "rate": 3,
+      "centsPerDollar": 3,
+      "basis": "bonus",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "3% cash back on US online retail, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [
+        {
+          "code": "cap_near_limit",
+          "message": "Amex Blue Cash Everyday is near its $6000 yearly cap on US online retail."
+        }
+      ],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-gold-restaurant-reached",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "3x at restaurants, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-gold-supermarket-reached",
+      "cardId": "amex-blue-cash-everyday",
+      "rate": 3,
+      "centsPerDollar": 3,
+      "basis": "bonus",
+      "category": "us_supermarket",
+      "foreign": false,
+      "reason": "3% cash back at US supermarkets, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "cap-both-supermarket-reached",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "us_supermarket",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 2
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "foreign-gbp-online-retail",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 1,
+      "centsPerDollar": 2,
+      "basis": "base",
+      "category": "us_online_retail",
+      "foreign": true,
+      "reason": "1x on everything else, about 2 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 2
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 0,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "foreign-gas",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "gas_ev",
+      "foreign": true,
+      "reason": "3x on gas and EV charging, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "citi-aa-platinum",
+        "centsPerDollar": 2.9
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 0,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "foreign-supermarket",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 1,
+      "centsPerDollar": 2,
+      "basis": "base",
+      "category": "us_supermarket",
+      "foreign": true,
+      "reason": "1x on everything else, about 2 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 2
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 0,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "foreign-aa-verify-fee",
+      "cardId": "citi-aa-platinum",
+      "rate": 2,
+      "centsPerDollar": 2.9,
+      "basis": "perk",
+      "category": "airline_aa",
+      "foreign": true,
+      "reason": "Perk pick: free first checked bag and boarding perks on American (2x, about 2.9 cents per dollar)",
+      "runnerUp": {
+        "cardId": "amex-gold",
+        "centsPerDollar": 6
+      },
+      "warnings": [
+        {
+          "code": "foreign_fees",
+          "message": "Foreign purchase: avoid Chase Freedom Unlimited (3% fee), Amex Blue Cash Everyday (2.7% fee)."
+        },
+        {
+          "code": "verify_card",
+          "message": "Citi AAdvantage Platinum Select's 0% foreign fee is marked verify."
+        }
+      ],
+      "merchantMatch": "aa.com",
+      "ranked": [
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "perk"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 0,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": -1.7,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "foreign-usd-is-domestic",
+      "cardId": "amex-blue-cash-everyday",
+      "rate": 3,
+      "centsPerDollar": 3,
+      "basis": "bonus",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "3% cash back on US online retail, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "fallback-airline-direct",
+      "cardId": "amex-gold",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "airline_united",
+      "foreign": false,
+      "reason": "3x on United, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 4
+      },
+      "warnings": [
+        {
+          "code": "verify_rule",
+          "message": "Amex Gold 3x on flights booked with the airline is marked verify. Check the issuer's terms."
+        }
+      ],
+      "merchantMatch": "united.com",
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 2,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "setting-points-win-ties",
+      "cardId": "chase-freedom-unlimited",
+      "rate": 1.5,
+      "centsPerDollar": 3,
+      "basis": "base",
+      "category": "us_online_retail",
+      "foreign": false,
+      "reason": "1.5x on everything else, about 3 cents per dollar",
+      "runnerUp": {
+        "cardId": "amex-blue-cash-everyday",
+        "centsPerDollar": 3
+      },
+      "warnings": [],
+      "merchantMatch": "amazon.com",
+      "ranked": [
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 1.5,
+          "centsPerDollar": 3,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 3,
+          "centsPerDollar": 3,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 1,
+          "centsPerDollar": 2,
+          "basis": "base"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 1,
+          "centsPerDollar": 1.45,
+          "basis": "base"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 1,
+          "centsPerDollar": 1.2,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "setting-point-value-override",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "3x at restaurants, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "accept-may-not-take-amex",
+      "cardId": "amex-gold",
+      "rate": 4,
+      "centsPerDollar": 8,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "4x at restaurants, about 8 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-sapphire-preferred",
+        "centsPerDollar": 6
+      },
+      "warnings": [
+        {
+          "code": "may_not_take_amex",
+          "message": "This site may not take Amex. Backup: Chase Sapphire Preferred."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "amex-gold",
+          "rate": 4,
+          "centsPerDollar": 8,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "amex-blue-cash-everyday",
+          "rate": 1,
+          "centsPerDollar": 1,
+          "basis": "base"
+        }
+      ]
+    },
+    {
+      "id": "accept-no-amex",
+      "cardId": "chase-sapphire-preferred",
+      "rate": 3,
+      "centsPerDollar": 6,
+      "basis": "bonus",
+      "category": "restaurant",
+      "foreign": false,
+      "reason": "3x at restaurants, about 6 cents per dollar",
+      "runnerUp": {
+        "cardId": "chase-freedom-unlimited",
+        "centsPerDollar": 6
+      },
+      "warnings": [],
+      "merchantMatch": null,
+      "ranked": [
+        {
+          "cardId": "chase-sapphire-preferred",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "chase-freedom-unlimited",
+          "rate": 3,
+          "centsPerDollar": 6,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "citi-aa-platinum",
+          "rate": 2,
+          "centsPerDollar": 2.9,
+          "basis": "bonus"
+        },
+        {
+          "cardId": "united-explorer",
+          "rate": 2,
+          "centsPerDollar": 2.4,
+          "basis": "bonus"
+        }
+      ]
+    },
+    {
+      "id": "accept-none",
+      "cardId": null,
+      "rate": null,
+      "centsPerDollar": null,
+      "basis": null,
+      "category": "general",
+      "foreign": false,
+      "reason": "None of your cards are accepted here.",
+      "runnerUp": null,
+      "warnings": [
+        {
+          "code": "no_accepted_card",
+          "message": "None of your cards are accepted here."
+        }
+      ],
+      "merchantMatch": null,
+      "ranked": []
+    }
+  ]
+}
