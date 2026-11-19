@@ -37,7 +37,8 @@ public struct Card: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var preferredFor: [PerkPreference]?
     /// nil or true means enabled.
     public var enabled: Bool?
-    /// Optional last four digits, never more (PRD privacy rule 1).
+    /// Optional last 4 or 5 digits (Amex shows 5), never more (PRD privacy
+    /// rule 1). The name stays `last4` for schema compatibility.
     public var last4: String?
     /// Field names to double-check against issuer terms, e.g. ["foreignFeePct"].
     public var verify: [String]?

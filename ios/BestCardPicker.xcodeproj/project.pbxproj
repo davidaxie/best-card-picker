@@ -107,7 +107,7 @@
 		E7B1BAA9CD005009DAF64E0F /* PlaceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceMonitor.swift; sourceTree = "<group>"; };
 		EB9FC8F1E261ADDA7DFBEB70 /* SavedPlacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlacesView.swift; sourceTree = "<group>"; };
 		FD55FFE03D574AC93BD49A05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		"TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		"TEMP_4C47EB23-8337-464F-8857-50AC7988D7C0" /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,10 +258,10 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
-		"TEMP_F549CEBC-87BD-4E58-8935-7D2DBC3731F4" /* ios */ = {
+		"TEMP_8F99B9BF-D319-4F53-B590-E480CEED20C4" /* ios */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */,
+				"TEMP_4C47EB23-8337-464F-8857-50AC7988D7C0" /* Signing.xcconfig */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -520,7 +520,7 @@
 		};
 		4D9D3D145400C7C7FDB0F0AB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */;
+			baseConfigurationReference = "TEMP_4C47EB23-8337-464F-8857-50AC7988D7C0" /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -666,7 +666,7 @@
 		};
 		D70B9DE41292F8B0203B33DA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_CBBB8EEA-C44D-4EF3-BB7E-4B8F5DE57443" /* Signing.xcconfig */;
+			baseConfigurationReference = "TEMP_4C47EB23-8337-464F-8857-50AC7988D7C0" /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

@@ -10,7 +10,7 @@ Swift, so both always give the same answer. See `../PRD.md` and
 | Path | What |
 |---|---|
 | `Packages/BestCardEngine` | Local Swift package. `BestCardEngine` is the scoring engine, a port of `src/engine`. `CardPickerCore` holds storage, saved places, the MapKit category mapping and the answer text shared by every screen. |
-| `App/` | The app: category grid, nearby list, saved places, card editor, settings, App Intents, CLMonitor alerts. |
+| `App/` | The app: Pick tab (grid and store search), Map tab (nearby pins and saved places), Settings with the card editor, App Intents, CLMonitor alerts. |
 | `Widget/` | Lock screen widget, plus a Control Center control on iOS 18 and later. |
 | `Shared/` | Code built into both the app and the widget: App Group names and the Control Center intent. |
 | `AppTests/`, `UITests/` | XCTest unit tests and UI tests for the app. |
@@ -66,17 +66,25 @@ After the extension side changes `data/` or `src/engine`, run
   "Chipotle") and each match shows its best card, with no location needed. It
   searches the hand-reviewed brands in `cards.json` and `merchants.json` first,
   then about 3,900 US chains bundled in `brands.json`.
-- **Nearby**: an `MKLocalPointsOfInterestRequest` within 200 m lists the 5
-  nearest places. Each place's category is resolved in this order: your saved
-  choice for that place, a brand in `merchants.json`, a chain in the bundled
-  `brands.json` (whole name only, so "Kings BBQ" is not the Kings
-  supermarket), the MapKit category
+- **Three tabs**: Pick (grid and store search), Map, and Settings (with
+  **My cards**, the card editor and cap toggles, at the top).
+- **Map**: Apple Maps centered on you, with up to 12 paying places within
+  200 m as pins (`MKLocalPointsOfInterestRequest`) and your saved places as
+  orange stars. Tap the pin or the row for the place you're at to get its
+  card, or save it. Drag the map and tap **Search this area** to pick a place
+  somewhere else (300 m), which also works with location off. Each place's
+  category is resolved in this order: your saved choice for that place, a
+  brand in `merchants.json`, a chain in the bundled `brands.json` (whole name
+  only, so "Kings BBQ" is not the Kings supermarket), the MapKit category
   (PRD table), then general (the app asks once and remembers). The reason line
-  says "Likely" because MapKit is guessing.
-- **Saved places** (max 20, iOS's limit): each place is a 100 m
-  `CLMonitor.CircularGeographicCondition`. On entry the app posts a
-  notification such as "Trader Joe's: use Amex Gold (4x)". The app asks for
-  "Always" location only when you turn on the Saved place alerts switch.
+  says "Likely" because the category is a guess.
+- **Location**: the Map tab asks for While Using, then once for Always (David
+  chose this on 2026-11-19, replacing the PRD's alerts-only rule). Until it
+  is Always, the tab shows a button to the app's Location settings.
+- **Saved places** (max 20, iOS's limit, listed under the map): each place is
+  a 100 m `CLMonitor.CircularGeographicCondition`. On entry the app posts a
+  notification such as "Trader Joe's: use Amex Gold (4x)". Alerts need
+  Always location; the Saved place alerts switch asks for it if needed.
 - **"Which card here?"**: checks for a saved place within 100 m, then the
   nearest MapKit place within 100 m (skipped in Offline mode). Siri, Shortcuts
   and the Action button all use the same answer. In Siri, say "Which card here
@@ -87,10 +95,10 @@ After the extension side changes `data/` or `src/engine`, run
   if it isn't, make a one-action shortcut with it in the Shortcuts app first).
   It opens the app straight on the "Which card here?" answer.
 - **Widget**: shows the last place-based answer (from an arrival alert, a
-  Nearby tap or Siri) for 2 hours, then "Which card here?". Tapping it opens
+  Map tap or Siri) for 2 hours, then "Which card here?". Tapping it opens
   the app's Here sheet.
-- **Offline mode**: no MapKit requests at all. Grid, saved places, alerts and
-  the widget keep working.
+- **Offline mode**: no MapKit requests at all, so the map is hidden too.
+  Grid, store search, saved places, alerts and the widget keep working.
 
 ## Storage and privacy
 
@@ -101,7 +109,7 @@ After the extension side changes `data/` or `src/engine`, run
   locked in your pocket, and the widget and Siri also run while locked. It
   holds card names, public earn rates, cap toggles, saved place names and
   coordinates, and the last answer. **It never holds card numbers**: only a
-  nickname and optional last four digits exist anywhere, and imports
+  nickname and optional last 4 or 5 digits (Amex shows 5) exist anywhere, and imports
   containing anything like a card number (12 or more digits) are rejected.
 - The only network use is MapKit. There's no URLSession, iCloud, CloudKit,
   analytics or crash reporting. "Clear all data" in Settings wipes both files.

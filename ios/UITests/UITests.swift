@@ -30,7 +30,7 @@ final class CardPickerUITests: XCTestCase {
     @MainActor
     func testOfflineModeDisablesNearby() {
         let app = launch(["-offline"])
-        app.tabBars.buttons["Nearby"].tap()
+        app.tabBars.buttons["Map"].tap()
         XCTAssertTrue(app.staticTexts["offlineNotice"].waitForExistence(timeout: 2)
                       || app.otherElements["offlineNotice"].exists
                       || app.cells.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Offline mode is on'")).firstMatch.exists)

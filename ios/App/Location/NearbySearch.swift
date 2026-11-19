@@ -35,6 +35,10 @@ enum NearbySearch {
     /// The list radius. The PRD's "about 100 m" is used for "Which card here?".
     static let listRadius: CLLocationDistance = 200
     static let hereRadius: CLLocationDistance = 100
+    /// "Search this area" after dragging the map.
+    static let areaRadius: CLLocationDistance = 300
+    /// Pins on the Map tab.
+    static let mapLimit = 12
 
     static func search(around location: CLLocation, radius: CLLocationDistance = listRadius, limit: Int = 5, offline: Bool) async throws -> [Place] {
         guard !offline else { throw SearchError.offline }

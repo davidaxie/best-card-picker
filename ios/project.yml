@@ -58,7 +58,7 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSLocationWhenInUseUsageDescription: "Finds the store you're in so it can name the best card. MapKit lookups send your location to Apple; turn on Offline mode to stop them."
-        NSLocationAlwaysAndWhenInUseUsageDescription: "Only used for saved place alerts: tells you which card to use when you arrive at a saved store, even with the app closed."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "Shows where you are on the map right away, and tells you which card to use when you arrive at a saved store, even with the app closed. MapKit lookups send your location to Apple; turn on Offline mode to stop them."
         LSSupportsOpeningDocumentsInPlace: false
         CFBundleURLTypes:
           - CFBundleURLName: com.davidxie.bestcardpicker

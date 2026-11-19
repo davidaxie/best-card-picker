@@ -3,60 +3,50 @@ import SwiftUI
 import BestCardEngine
 import CardPickerCore
 
-/// Up to 20 saved stores. With alerts on, arriving at one posts a notification.
-struct SavedPlacesView: View {
+/// Up to 20 saved stores, shown under the map. With alerts on, arriving at
+/// one posts a notification.
+struct SavedPlacesSection: View {
     @Environment(AppModel.self) private var model
-    @State private var adding = false
     @State private var monitored: [String] = []
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    AlertsToggle()
-                } footer: {
-                    Text("Alerts use \"Always\" location and Background App Refresh. iOS monitors at most 20 places.")
-                }
-                Section("\(model.data.savedPlaces.count) of \(SavedPlace.maxCount) places") {
-                    if model.data.savedPlaces.isEmpty {
-                        Text("Save a place from the Nearby tab, or add one where you're standing.").foregroundStyle(.secondary)
-                    }
-                    ForEach(model.data.savedPlaces) { place in
-                        let answer = model.data.answer(for: place.context)
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(place.name).font(.headline)
-                                Spacer()
-                                if monitored.contains(place.id.uuidString) {
-                                    Image(systemName: "bell.fill").font(.caption).foregroundStyle(.green)
-                                        .accessibilityLabel("Monitored")
-                                }
-                            }
-                            Text(Categories.label(place.category)).font(.caption).foregroundStyle(.secondary)
-                            if let answer { Text(answer.notificationText(placeName: place.name)).font(.subheadline) }
-                        }
-                        .accessibilityIdentifier("saved-\(place.name)")
-                        .swipeActions {
-                            Button("Test alert") { Task { await PlaceArrival.handle(placeId: place.id.uuidString) } }
-                                .tint(.blue)
+        Section {
+            AlertsToggle()
+            if model.data.savedPlaces.isEmpty {
+                Text("Tap a store above and save it, or use + to save the spot you're standing in.").foregroundStyle(.secondary)
+            }
+            ForEach(model.data.savedPlaces) { place in
+                let answer = model.data.answer(for: place.context)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: "star.circle.fill").foregroundStyle(.orange)
+                        Text(place.name).font(.headline)
+                        Spacer()
+                        if monitored.contains(place.id.uuidString) {
+                            Image(systemName: "bell.fill").font(.caption).foregroundStyle(.green)
+                                .accessibilityLabel("Monitored")
                         }
                     }
-                    .onDelete { idx in model.update { $0.savedPlaces.remove(atOffsets: idx) } }
+                    Text(Categories.label(place.category)).font(.caption).foregroundStyle(.secondary)
+                    if let answer { Text(answer.notificationText(placeName: place.name)).font(.subheadline) }
+                }
+                .accessibilityIdentifier("saved-\(place.name)")
+                .swipeActions {
+                    Button("Delete", role: .destructive) {
+                        model.update { $0.savedPlaces.removeAll { $0.id == place.id } }
+                    }
+                    Button("Test alert") { Task { await PlaceArrival.handle(placeId: place.id.uuidString) } }
+                        .tint(.blue)
                 }
             }
-            .navigationTitle("Saved places")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { adding = true } label: { Image(systemName: "plus") }
-                        .disabled(model.data.savedPlaces.count >= SavedPlace.maxCount)
-                        .accessibilityIdentifier("addPlaceHere")
-                }
-            }
-            .sheet(isPresented: $adding) { AddPlaceHere() }
-            .task(id: "\(model.data.savedPlaces.map(\.id))-\(model.data.savedPlaceAlerts)") {
-                try? await Task.sleep(for: .milliseconds(300))
-                monitored = await PlaceMonitor.shared.monitoredIdentifiers()
-            }
+        } header: {
+            Text("Saved places · \(model.data.savedPlaces.count) of \(SavedPlace.maxCount)")
+        } footer: {
+            Text("Alerts use \"Always\" location and Background App Refresh. iOS monitors at most 20 places.")
+        }
+        .task(id: "\(model.data.savedPlaces.map(\.id))-\(model.data.savedPlaceAlerts)") {
+            try? await Task.sleep(for: .milliseconds(300))
+            monitored = await PlaceMonitor.shared.monitoredIdentifiers()
         }
     }
 }
@@ -77,7 +67,7 @@ struct AlertsToggle: View {
 
     private func set(_ on: Bool) async {
         if on {
-            // "Always" is requested only here, when alerts are turned on.
+            // Asks for Always if the Map tab hasn't already.
             let status = await LocationService.shared.requestAlways()
             await Notifications.requestAuthorization()
             note = status == .authorizedAlways ? nil

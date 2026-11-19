@@ -39,8 +39,9 @@ public enum CardsValidator {
             if card.baseRate < 0 || card.foreignFeePct < 0 {
                 out.append(Problem(message: "\(card.name): rates and fees cannot be negative."))
             }
-            if let last = card.last4, !(last.count == 4 && last.allSatisfy(\.isNumber)) {
-                out.append(Problem(message: "\(card.name): last4 must be exactly 4 digits."))
+            // 4 or 5 digits: Amex shows a 5-digit ending (SCHEMA_CHANGES.md, 2026-11-19).
+            if let last = card.last4, !((4...5).contains(last.count) && last.allSatisfy { ("0"..."9").contains($0) }) {
+                out.append(Problem(message: "\(card.name): last4 must be 4 or 5 digits."))
             }
             for perk in card.preferredFor ?? [] where !known.contains(perk.category) {
                 out.append(Problem(message: "\(card.name): unknown perk category \(perk.category)."))

@@ -2,52 +2,52 @@ import SwiftUI
 import BestCardEngine
 import CardPickerCore
 
-/// The card editor: same fields as the extension's options page.
+/// The card editor (Settings > My cards): same fields as the extension's
+/// options page. Pushed inside Settings' navigation stack.
 struct CardsView: View {
     @Environment(AppModel.self) private var model
     @State private var editing: Card?
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    ForEach(model.data.cardsFile.cards) { card in
-                        Button { editing = card } label: {
-                            HStack {
-                                CardBadge(card: card)
-                                VStack(alignment: .leading) {
-                                    Text(card.name).font(.headline)
-                                    Text(summary(card)).font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                                }
-                                Spacer()
-                                if !card.isEnabled { Text("Off").font(.caption).foregroundStyle(.secondary) }
+        List {
+            Section {
+                ForEach(model.data.cardsFile.cards) { card in
+                    Button { editing = card } label: {
+                        HStack {
+                            CardBadge(card: card)
+                            VStack(alignment: .leading) {
+                                Text(card.name).font(.headline)
+                                Text(summary(card)).font(.caption).foregroundStyle(.secondary).lineLimit(2)
                             }
+                            Spacer()
+                            if !card.isEnabled { Text("Off").font(.caption).foregroundStyle(.secondary) }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("card-\(card.id)")
                     }
-                    .onDelete { idx in model.update { $0.cardsFile.cards.remove(atOffsets: idx) } }
-                    .onMove { from, to in model.update { $0.cardsFile.cards.move(fromOffsets: from, toOffset: to) } }
-                } footer: {
-                    Text("Card order breaks the last tie. Only a nickname and optional last four digits are stored, never a card number.")
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("card-\(card.id)")
                 }
-                Section("Caps reached") {
-                    CapToggles()
-                }
+                .onDelete { idx in model.update { $0.cardsFile.cards.remove(atOffsets: idx) } }
+                .onMove { from, to in model.update { $0.cardsFile.cards.move(fromOffsets: from, toOffset: to) } }
+            } footer: {
+                Text("Card order breaks the last tie. Only a nickname and optional last 4 or 5 digits are stored, never a card number.")
             }
-            .navigationTitle("Cards")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) { EditButton() }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        editing = Card(id: "card-\(Int(Date().timeIntervalSince1970))", name: "New card", network: "visa",
-                                       currency: "cash", foreignFeePct: 0, baseRate: 1, rules: [])
-                    } label: { Image(systemName: "plus") }
-                }
+            Section("Caps reached") {
+                CapToggles()
             }
-            .sheet(item: $editing) { card in
-                CardEditor(card: card)
+        }
+        .navigationTitle("My cards")
+        .toolbar {
+            // Leading would hide the back button, so Edit sits with +.
+            ToolbarItem(placement: .topBarTrailing) { EditButton() }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    editing = Card(id: "card-\(Int(Date().timeIntervalSince1970))", name: "New card", network: "visa",
+                                   currency: "cash", foreignFeePct: 0, baseRate: 1, rules: [])
+                } label: { Image(systemName: "plus") }
             }
+        }
+        .sheet(item: $editing) { card in
+            CardEditor(card: card)
         }
     }
 
@@ -96,10 +96,11 @@ struct CardEditor: View {
                 Section("Card") {
                     TextField("Nickname", text: $card.name).accessibilityIdentifier("cardName")
                     TextField("Badge code (e.g. GOLD)", text: Binding(get: { card.shortCode ?? "" }, set: { card.shortCode = $0.isEmpty ? nil : $0 }))
-                    TextField("Last four digits (optional)", text: Binding(
+                    TextField("Last 4 or 5 digits (optional)", text: Binding(
                         get: { card.last4 ?? "" },
                         set: { v in
-                            let digits = String(v.filter(\.isNumber).prefix(4))
+                            // Amex shows a 5-digit ending; never more than 5.
+                            let digits = String(v.filter { ("0"..."9").contains($0) }.prefix(5))
                             card.last4 = digits.isEmpty ? nil : digits
                         }))
                         .keyboardType(.numberPad)

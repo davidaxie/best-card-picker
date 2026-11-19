@@ -1,8 +1,9 @@
 import CoreLocation
 import Foundation
 
-/// Core Location access. "While Using" for nearby lookups; "Always" is asked
-/// for only when saved place alerts are turned on (PRD privacy rule 6).
+/// Core Location access. "While Using" first; "Always" is asked once from the
+/// Map tab (David's call, 2026-11-19, over PRD privacy rule 6) and again when
+/// saved place alerts are turned on.
 @MainActor
 final class LocationService: NSObject, CLLocationManagerDelegate {
     static let shared = LocationService()
@@ -29,7 +30,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    /// Called only from the "Saved place alerts" switch.
+    /// Called from the Map tab (once) and the "Saved place alerts" switch.
     @discardableResult
     func requestAlways() async -> CLAuthorizationStatus {
         if status == .notDetermined { await requestWhenInUse() }

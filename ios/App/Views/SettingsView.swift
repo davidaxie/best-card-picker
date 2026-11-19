@@ -14,6 +14,17 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    NavigationLink {
+                        CardsView()
+                    } label: {
+                        Label("My cards", systemImage: "creditcard.fill")
+                            .badge(model.data.cardsFile.cards.filter(\.isEnabled).count)
+                    }
+                    .accessibilityIdentifier("myCards")
+                } footer: {
+                    Text("Card rules, caps reached, and which cards are on.")
+                }
+                Section {
                     Toggle("Offline mode", isOn: Binding(get: { model.data.offlineMode }, set: { v in model.update { $0.offlineMode = v } }))
                         .accessibilityIdentifier("offlineToggle")
                 } footer: {

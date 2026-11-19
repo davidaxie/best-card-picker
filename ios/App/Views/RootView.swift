@@ -13,11 +13,7 @@ struct RootView: View {
             GridView()
                 .tabItem { Label("Pick", systemImage: "square.grid.2x2.fill") }
             NearbyView()
-                .tabItem { Label("Nearby", systemImage: "location.fill") }
-            SavedPlacesView()
-                .tabItem { Label("Places", systemImage: "mappin.and.ellipse") }
-            CardsView()
-                .tabItem { Label("Cards", systemImage: "creditcard.fill") }
+                .tabItem { Label("Map", systemImage: "map.fill") }
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }

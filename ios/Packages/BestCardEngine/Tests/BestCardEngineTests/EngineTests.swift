@@ -70,6 +70,26 @@ struct EngineTests {
         #expect(throws: Never.self) { _ = try CardsValidator.decode(bundled) }
     }
 
+    /// SCHEMA_CHANGES.md 2026-11-19: last4 takes 4 or 5 digits (Amex shows 5).
+    /// Digits here are made up.
+    @Test func last4AcceptsFourOrFiveDigits() throws {
+        func problems(_ last4: String) -> [CardsValidator.Problem] {
+            var file = engine.file
+            file.cards[0].last4 = last4
+            return CardsValidator.validate(file).filter { $0.message.contains("last4") }
+        }
+        #expect(problems("1234").isEmpty)
+        #expect(problems("12345").isEmpty)
+        for bad in ["123", "123456", "12a45", "12 45", "١٢٣٤"] {
+            #expect(!problems(bad).isEmpty, "\(bad) should be rejected")
+        }
+        // An extension export carrying a 5-digit ending imports cleanly.
+        var file = engine.file
+        file.cards[0].last4 = "98765"
+        let again = try CardsValidator.decode(try JSONEncoder().encode(file))
+        #expect(again.cards[0].last4 == "98765")
+    }
+
     @Test func exportReimportChangesNothing() throws {
         let original = engine.file
         let encoder = JSONEncoder()

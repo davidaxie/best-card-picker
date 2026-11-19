@@ -2,7 +2,7 @@ import Foundation
 import BestCardEngine
 
 /// Everything the iPhone app stores, in one JSON file.
-/// No card numbers: cards carry a nickname and, optionally, the last four digits.
+/// No card numbers: cards carry a nickname and, optionally, the last 4 or 5 digits.
 public struct AppData: Codable, Equatable, Sendable {
     public static let currentSchema = 1
 
