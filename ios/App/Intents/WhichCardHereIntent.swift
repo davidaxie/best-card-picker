@@ -82,6 +82,14 @@ struct CardPickerShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Best card for…",
             systemImageName: "square.grid.2x2")
+        AppShortcut(
+            intent: OpenHereIntent(),
+            phrases: [
+                "Open \(.applicationName) here",
+                "Show \(.applicationName) for this store",
+            ],
+            shortTitle: "Open Which Card Here",
+            systemImageName: "creditcard.and.123")
     }
 }
 

@@ -75,6 +75,10 @@ After the extension side changes `data/` or `src/engine`, run
   and the Action button all use the same answer. In Siri, say "Which card here
   in Card Picker" (Apple requires the app name in the phrase). There's also
   "Best card for gas in Card Picker".
+- **Back Tap or Action button**: in Settings > Accessibility > Touch > Back
+  Tap > Triple Tap, pick **Open Which Card Here** (listed under Card Picker;
+  if it isn't, make a one-action shortcut with it in the Shortcuts app first).
+  It opens the app straight on the "Which card here?" answer.
 - **Widget**: shows the last place-based answer (from an arrival alert, a
   Nearby tap or Siri) for 2 hours, then "Which card here?". Tapping it opens
   the app's Here sheet.
