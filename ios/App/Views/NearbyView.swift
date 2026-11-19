@@ -75,12 +75,18 @@ struct NearbyView: View {
                         Text("\(answer.card.name) · \(answer.rateText)").font(.subheadline)
                     }
                 }
-                Text(resolution.source == .unknown ? "Category unknown: tap to set it" : "Likely \(Categories.label(resolution.category).lowercased())")
+                Text(resolution.source == .unknown ? "Category unknown: tap to set it" : "Likely \(Self.lowerFirst(Categories.label(resolution.category)))")
                     .font(.caption).foregroundStyle(resolution.source == .unknown ? .orange : .secondary)
             }
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("nearby-\(place.name)")
+    }
+
+    /// "Restaurants" -> "restaurants", but "US supermarkets" stays as is.
+    static func lowerFirst(_ s: String) -> String {
+        guard let first = s.first, s.dropFirst().first?.isUppercase != true else { return s }
+        return first.lowercased() + s.dropFirst()
     }
 
     private func refresh() async {

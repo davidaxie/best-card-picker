@@ -23,6 +23,15 @@ enum NearbySearch {
         var errorDescription: String? { "Offline mode is on, so nearby lookups are off. Use the category grid or a saved place." }
     }
 
+    /// Places where you pay at a register. Offices, clinics, parks and
+    /// uncategorized businesses would otherwise crowd stores out of the list.
+    static let payingCategories: [MKPointOfInterestCategory] = [
+        .restaurant, .cafe, .bakery, .brewery, .winery, .nightlife,
+        .foodMarket, .store, .gasStation, .evCharger, .pharmacy,
+        .hotel, .parking, .publicTransport, .carRental,
+        .movieTheater, .theater, .fitnessCenter, .laundry, .amusementPark, .museum, .zoo, .aquarium,
+    ]
+
     /// The list radius. The PRD's "about 100 m" is used for "Which card here?".
     static let listRadius: CLLocationDistance = 200
     static let hereRadius: CLLocationDistance = 100
@@ -30,7 +39,7 @@ enum NearbySearch {
     static func search(around location: CLLocation, radius: CLLocationDistance = listRadius, limit: Int = 5, offline: Bool) async throws -> [Place] {
         guard !offline else { throw SearchError.offline }
         let request = MKLocalPointsOfInterestRequest(center: location.coordinate, radius: radius)
-        request.pointOfInterestFilter = .includingAll
+        request.pointOfInterestFilter = MKPointOfInterestFilter(including: payingCategories)
         let response = try await MKLocalSearch(request: request).start()
         let places = response.mapItems.compactMap { item -> Place? in
             guard let name = item.name else { return nil }
